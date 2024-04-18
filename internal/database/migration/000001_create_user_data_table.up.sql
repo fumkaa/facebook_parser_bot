@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS data_user (
+    chat_id BIGINT UNIQUE NOT NULL,
+    wait_response BOOLEAN DEFAULT FALSE
+)

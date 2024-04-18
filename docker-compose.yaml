@@ -1,0 +1,41 @@
+version: '3.5'
+
+services:
+  app:
+    build: 
+      context: ./
+      dockerfile: ./volumes/build/go-app/Dockerfile
+      target: dev
+    env_file:
+      - .env
+    restart: always
+    container_name: go_app
+    depends_on:
+      - db
+      - migrate
+  db:
+    build: 
+      dockerfile: ./volumes/build/mysql/Dockerfile
+      context: ./
+    container_name: mysql-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PASSWORD_DB}
+      - MYSQL_DATABASE=${DATABASE_NAME}
+    volumes:
+      - data:/var/lib/mysql
+    ports:
+      - 3300:3306
+  migrate:
+    build: 
+      dockerfile: ./volumes/build/migrate/Dockerfile
+      context: ./
+    container_name: migration
+    command: ["-path", "/migrations", "-database", $CONN_URI_DB, "up"]
+    # command: ["-path", "/migrations", "-database",  $CONN_URI_DB, "down", "-all"]
+    # command: ["-path", "/migrations", "-database",  $CONN_URI_DB, "force", "1"]
+    restart: on-failure
+    depends_on:
+      - db
+volumes:
+  data:

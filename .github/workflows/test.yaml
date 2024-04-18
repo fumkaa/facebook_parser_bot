@@ -1,0 +1,44 @@
+name: test action
+run-name: test run-name
+
+on: push
+
+env:
+  IMAGE_NAME: "facebook_parser_bot"
+  IMAGE_NAME_REGISTRY: "registry"
+  PORT_REGISTRY: "5000"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Checkout main
+      #   uses: actions/checkout@v4
+      - name: test
+        run: echo "test"
+      # - name: Create .env
+      #   run: |
+      #     touch .env
+      #     echo "${{ secrets.ENV_FILE }}" > .env 
+      # - name: Create SSH key
+      #   run: |
+      #     mkdir -p ~/.ssh/
+      #     chmod g-w $HOME/.ssh
+      #     echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+      #     sudo chmod 600 ~/.ssh/id_rsa
+      #     echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      #     chmod 644 ~/.ssh/known_hosts  
+      #   shell: bash  
+      #   env: 
+      #     SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
+      #     SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
+      #     SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+         
+      # - name: Create and use context 
+      #   run: | 
+      #     docker context create remote --docker "host=ssh://${{  secrets.SERVER_CONN  }}"
+      #     docker context use remote 
+      # - name: run docker
+      #   run: |
+      #     docker-compose up -d
+          
