@@ -27,7 +27,7 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
          
-      - name: Create and use context 
+      - name: Create and use context  
         run: | 
           docker context create remote --docker "host=ssh://${{  secrets.SERVER_CONN  }}"
           docker context use remote 
