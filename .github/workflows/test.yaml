@@ -33,5 +33,6 @@ jobs:
           docker context use remote 
       - name: run docker
         run: | 
+          docker-compose build
           docker-compose up -d
           
