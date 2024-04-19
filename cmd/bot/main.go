@@ -35,6 +35,7 @@ func main() {
 }
 
 func connDB(config *configs.Configuration) (*sqlx.DB, error) {
+	log.Print("connDB start")
 	cnf := mysql.Config{
 		User:              config.UserDB,
 		Passwd:            config.PasswordDB,
