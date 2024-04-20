@@ -15,9 +15,9 @@ WORKDIR /build
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=build /build/app /build/
 COPY --from=build /build/settings/config.yaml /build/settings
-RUN mkdir data 
-RUN cd data 
+WORKDIR /build/data
 RUN mkdir free_account 
 RUN mkdir work_account
+WORKDIR /build
 # COPY --from=build /build/data /build/data
 ENTRYPOINT ["/build/app", "-other", "flags"]

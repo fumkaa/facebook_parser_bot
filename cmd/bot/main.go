@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -20,10 +21,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	dbx, err := connDB(config)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("conn db err: %v", err)
 	}
 	db := database.NewStorage(dbx)
 
