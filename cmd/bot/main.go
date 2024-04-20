@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 	db := database.NewStorage(dbx)
-	log.Print("NewStorage")
+
 	ctx := context.Background()
 	bot_api.Debug = true
 	tg_bot := telegram.NewBot(bot_api, db, parser.NewParser(db))
