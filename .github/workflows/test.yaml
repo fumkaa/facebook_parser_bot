@@ -22,11 +22,17 @@ jobs:
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts  
         shell: bash  
-        env: 
+        env:  
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-         
+      - name: Create data dir
+        run: | 
+          touch data
+          cd data
+          touch free_account 
+          touch work_account
+          cd ../
       - name: Create and use context  
         run: | 
           docker context create remote --docker "host=ssh://${{  secrets.SERVER_CONN  }}"
