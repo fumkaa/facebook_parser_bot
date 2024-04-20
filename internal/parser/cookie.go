@@ -94,6 +94,15 @@ func (p *StrParser) checkAndSetCookie(ctx context.Context, data Datas) error {
 		if err := p.LoginFBaccountToLogPass(ctx, data.Datas); err != nil {
 			return fmt.Errorf("login to username and password error: %w", err)
 		}
+		var buf []byte
+		if err := chromedp.Run(ctx,
+			chromedp.FullScreenshot(&buf, 90),
+		); err != nil {
+			return fmt.Errorf("click log in error: %v", err)
+		}
+		if err := os.WriteFile("test.png", buf, 00644); err != nil {
+			return fmt.Errorf("WriteFile err: %w", err)
+		}
 		if err := chromedp.Run(ctx,
 			chromedp.Sleep(5*time.Second),
 			chromedp.Evaluate(fmt.Sprintf("document.querySelector(`h4[id=%q]`).textContent;", ":R1alalqlaiktl9aqqd9emhpapd5aq:"), &res),
@@ -124,7 +133,7 @@ func (p *StrParser) LoginFBaccountToLogPass(ctx context.Context, data Data) erro
 	); err != nil {
 		return fmt.Errorf("navigate error: %w", err)
 	}
-	var res2 []byte
+	var res2 interface{}
 	var res1 interface{}
 	log.Print(" ClearBrowserCookies")
 	if err := chromedp.Run(ctx,
@@ -212,6 +221,8 @@ func (p *StrParser) LoginFBaccountToLogPass(ctx context.Context, data Data) erro
 		); err != nil {
 			return fmt.Errorf("click log in error: %v", err)
 		}
+		log.Printf("login: %v", data.LoginFB)
+		log.Printf("pass: %v", data.PassFB)
 		return nil
 	}
 	log.Printf("res1: %v", res1)
@@ -245,12 +256,13 @@ func (p *StrParser) LoginFBaccountToLogPass(ctx context.Context, data Data) erro
 	); err != nil {
 		return fmt.Errorf("sendKeys password error: %v", err)
 	}
-
 	if err := chromedp.Run(ctx,
 		chromedp.Submit(`button[class="_42ft _4jy0 _6lth _4jy6 _4jy1 selected _51sy"]`, chromedp.ByQuery),
 		chromedp.Sleep(5*time.Second),
 	); err != nil {
 		return fmt.Errorf("click log in error: %v", err)
 	}
+	log.Printf("login: %v", data.LoginFB)
+	log.Printf("pass: %v", data.PassFB)
 	return nil
 }
