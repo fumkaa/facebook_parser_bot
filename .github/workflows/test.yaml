@@ -28,10 +28,10 @@ jobs:
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
       - name: Create data dir
         run: | 
-          touch data
+          mkdir data
           cd data
-          touch free_account 
-          touch work_account
+          mkdir free_account 
+          mkdir work_account
           cd ../
       - name: Create and use context  
         run: | 
