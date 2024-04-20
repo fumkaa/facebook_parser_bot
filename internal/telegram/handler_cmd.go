@@ -63,18 +63,6 @@ func (b *Bot) handleStartCommand(ctx context.Context, message *tgbotapi.Message)
 	if err != nil {
 		return fmt.Errorf("[handleStartCommand]error send message: %w", err)
 	}
-	waitMsg, err := b.db.WaitMessage(ctx, int(message.Chat.ID))
-	if err != nil {
-		return fmt.Errorf("get wait message error: %w", err)
-	}
-	if waitMsg {
-		msg := tgbotapi.NewMessage(message.Chat.ID, replyStart)
-		_, err = b.bot.Send(msg)
-		if err != nil {
-			return fmt.Errorf("[handleStartCommand]error send message: %w", err)
-		}
-		return nil
-	}
 	return nil
 }
 

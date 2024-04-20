@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -545,6 +546,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			}
 			b.rw.Unlock()
 			log.Printf("!!!!!data: %v", datas)
+			var once sync.Once
 			for _, data := range datas {
 				b.rw.Lock()
 				opts := append(chromedp.DefaultExecAllocatorOptions[:],
@@ -567,18 +569,72 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				case parser.ErrProxyConnectionFailed:
 					for _, id := range Admins {
 						if message.Chat.ID != id {
-							msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, мы уже работаем над этим")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
+							once.Do(func() {
+								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+								msg.ReplyMarkup = StartKeyboard
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Fatalf("[handleMessage]error send message: %v", err)
+								}
+							})
 						} else if message.Chat.ID == id {
-							msg := tgbotapi.NewMessage(id, "Не валидные прокси: "+data.FileName)
-							_, err = b.bot.Send(msg)
+							dataFile, err := os.ReadDir(parser.Free_account)
 							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
+								log.Printf("ReadDir error: %v", err)
+								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+								msg.ReplyMarkup = StartKeyboard
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Fatalf("[handleMessage]error send message: %v", err)
+								}
 							}
+							if len(dataFile) == 0 {
+								for _, id := range Admins {
+									if message.Chat.ID != id {
+										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+										_, err = b.bot.Send(msg)
+										if err != nil {
+											log.Fatalf("[handleMessage]error send message: %v", err)
+										}
+									} else if message.Chat.ID == id {
+										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+										_, err = b.bot.Send(msg)
+										if err != nil {
+											log.Fatalf("[handleMessage]error send message: %v", err)
+
+										}
+									}
+								}
+							}
+							for _, file := range dataFile {
+								if file.Name() == data.FileName {
+									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
+										log.Printf("remove error: %v", err)
+										for _, id := range Admins {
+											if message.Chat.ID != id {
+												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+												_, err = b.bot.Send(msg)
+												if err != nil {
+													log.Fatalf("[handleMessage]error send message: %v", err)
+												}
+											} else if message.Chat.ID == id {
+												msg := tgbotapi.NewMessage(id, "Ошибка при удалении аккаунта с не валидными прокси")
+												_, err = b.bot.Send(msg)
+												if err != nil {
+													log.Fatalf("[handleMessage]error send message: %v", err)
+
+												}
+											}
+										}
+									}
+									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: не валидные прокси в файле: "+data.FileName)
+									_, err = b.bot.Send(msg)
+									if err != nil {
+										log.Fatalf("[handleMessage]error send message: %v", err)
+									}
+								}
+							}
+
 						}
 
 					}
@@ -589,10 +645,64 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 					continue
 				case parser.ErrAccountBanned:
 					for _, id := range Admins {
-						msg := tgbotapi.NewMessage(id, "Аккаунт забанен: "+data.FileName)
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Fatalf("[handleMessage]error send message: %v", err)
+						if message.Chat.ID == id {
+							dataFile, err := os.ReadDir(parser.Free_account)
+							if err != nil {
+								log.Printf("ReadDir error: %v", err)
+								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+								msg.ReplyMarkup = StartKeyboard
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Fatalf("[handleMessage]error send message: %v", err)
+								}
+							}
+							if len(dataFile) == 0 {
+								for _, id := range Admins {
+									if message.Chat.ID != id {
+										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+										_, err = b.bot.Send(msg)
+										if err != nil {
+											log.Fatalf("[handleMessage]error send message: %v", err)
+										}
+									} else if message.Chat.ID == id {
+										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+										_, err = b.bot.Send(msg)
+										if err != nil {
+											log.Fatalf("[handleMessage]error send message: %v", err)
+
+										}
+									}
+								}
+							}
+							for _, file := range dataFile {
+								if file.Name() == data.FileName {
+									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
+										log.Printf("remove error: %v", err)
+										for _, id := range Admins {
+											if message.Chat.ID != id {
+												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+												_, err = b.bot.Send(msg)
+												if err != nil {
+													log.Fatalf("[handleMessage]error send message: %v", err)
+												}
+											} else if message.Chat.ID == id {
+												msg := tgbotapi.NewMessage(id, "Ошибка при удалении забаненного аккаунта")
+												_, err = b.bot.Send(msg)
+												if err != nil {
+													log.Fatalf("[handleMessage]error send message: %v", err)
+
+												}
+											}
+										}
+									}
+									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: аккаунт забаннен, файл: "+data.FileName)
+									_, err = b.bot.Send(msg)
+									if err != nil {
+										log.Fatalf("[handleMessage]error send message: %v", err)
+									}
+								}
+							}
+
 						}
 					}
 					b.rw.Unlock()
