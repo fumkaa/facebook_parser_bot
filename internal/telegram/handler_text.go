@@ -148,6 +148,47 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 		}
 		go func() {
 			<-isDel
+			file_name, err := b.db.SelectFilterFile(ctx, ID)
+			if err != nil {
+				log.Printf("SelectFilterFile error: %v", err)
+				msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова удалить фильтр")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+					log.Fatalf("delete wait message error: %v", err)
+				}
+				SelectCity = false
+				SelectRadius = false
+				SelectInlineKB = false
+				InputPrice = false
+				InputYear = false
+				InputMill = false
+				DeleteFilter = false
+				return
+			}
+			if err := os.Rename(parser.Free_account+file_name, parser.Work_account+file_name); err != nil {
+				log.Printf("Rename error: %v", err)
+				msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова удалить фильтр")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+					log.Fatalf("delete wait message error: %v", err)
+				}
+				SelectCity = false
+				SelectRadius = false
+				SelectInlineKB = false
+				InputPrice = false
+				InputYear = false
+				InputMill = false
+				DeleteFilter = false
+				return
+			}
 			msg := tgbotapi.NewMessage(message.Chat.ID, "Успешно удалено!")
 			_, err = b.bot.Send(msg)
 			if err != nil {
@@ -945,6 +986,26 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				}
 				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
 					log.Printf("DeleteWaitMessage error: %v", err)
+					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg.ReplyMarkup = StartKeyboard
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Fatalf("[handleMessage]error send message: %v", err)
+					}
+					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+						log.Fatalf("delete wait message error: %v", err)
+					}
+					SelectCity = false
+					SelectRadius = false
+					SelectInlineKB = false
+					InputPrice = false
+					InputYear = false
+					InputMill = false
+					DeleteFilter = false
+					return
+				}
+				if err := b.db.AddFilterFile(ctx, ID); err != nil {
+					log.Printf("AddFilterFile error: %v", err)
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)

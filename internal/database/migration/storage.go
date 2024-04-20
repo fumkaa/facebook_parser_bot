@@ -234,12 +234,13 @@ func (s Storage) DeleteFilter(ctx context.Context, id int) error {
 }
 
 type Filter struct {
-	Id         string `db:"id"`
-	Chat_id    int    `db:"chat_id"`
-	Monitoring string `db:"monitoring"`
-	City       string `db:"city"`
-	Radius     string `db:"radius"`
-	Category   string `db:"category"`
+	Id          string `db:"id"`
+	Chat_id     int    `db:"chat_id"`
+	Monitoring  string `db:"monitoring"`
+	City        string `db:"city"`
+	Radius      string `db:"radius"`
+	Category    string `db:"category"`
+	Filter_file string `db:"filter_file"`
 }
 
 func (s Storage) SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, error) {
@@ -255,4 +256,36 @@ func (s Storage) SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, er
 	}
 
 	return lo.Map(sources, func(source Filter, _ int) Filter { return Filter(source) }), nil
+}
+
+func (s Storage) AddFilterFile(ctx context.Context, id int) error {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return fmt.Errorf("[AddFilterFile]connection db error: %w", err)
+	}
+	defer conn.Close()
+
+	_, err = conn.ExecContext(ctx, `UPDATE data_filters SET filter_file = ? WHERE id = ?;`, id)
+	if err != nil {
+		return fmt.Errorf("[AddFilterFile]set values city in db error: %w", err)
+	}
+	return nil
+}
+
+func (s Storage) SelectFilterFile(ctx context.Context, id int) (string, error) {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return "", fmt.Errorf("[SelectFilterFile]connection db error: %w", err)
+	}
+	defer conn.Close()
+	var source string
+	err = conn.GetContext(ctx, &source, `SELECT filter_file FROM data_filters WHERE id = ?`, id)
+	if err == sql.ErrNoRows {
+		return "", ErrNoRows
+	}
+	if err != nil && err != sql.ErrNoRows {
+		return "", fmt.Errorf("[SelectFilterFile]can't execute a request: %w", err)
+	}
+
+	return source, nil
 }

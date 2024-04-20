@@ -15,4 +15,6 @@ type Database interface {
 	AddCategoryFilter(ctx context.Context, id int, category string) error
 	DeleteFilter(ctx context.Context, id int) error
 	SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, error)
+	AddFilterFile(ctx context.Context, id int) error
+	SelectFilterFile(ctx context.Context, id int) (string, error)
 }
