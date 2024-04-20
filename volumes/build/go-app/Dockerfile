@@ -17,7 +17,7 @@ COPY --from=build /build/app /build/
 COPY --from=build /build/settings/config.yaml /build/settings
 RUN mkdir data 
 RUN cd data 
-RUN mkkdir free_account \
-    && mkkdir work_account
+RUN mkkdir free_account 
+RUN mkkdir work_account
 # COPY --from=build /build/data /build/data
 ENTRYPOINT ["/build/app", "-other", "flags"]
