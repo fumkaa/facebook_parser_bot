@@ -45,6 +45,7 @@ func connDB(config *configs.Configuration) (*sqlx.DB, error) {
 		DBName:            config.NameDB,
 		InterpolateParams: false,
 	}
+
 	db, err := sqlx.Open("mysql", cnf.FormatDSN())
 	if err != nil {
 		log.Print(err)

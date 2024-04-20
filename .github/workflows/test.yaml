@@ -26,13 +26,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{secrets.SSH_PRIVATE_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-      - name: Create data dir
-        run: | 
-          mkdir data
-          cd data
-          mkdir free_account 
-          mkdir work_account
-          cd ../
       - name: Create and use context  
         run: | 
           docker context create remote --docker "host=ssh://${{  secrets.SERVER_CONN  }}"
