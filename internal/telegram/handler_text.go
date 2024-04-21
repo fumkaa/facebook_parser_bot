@@ -559,6 +559,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				log.Fatalf("[handleMessage]error send message: %v", err)
 			}
 			b.rw.Lock()
+			log.Print("get data")
 			datas, err := b.parser.GetData()
 			if err == parser.ErrEmptyData {
 				for _, id := range Admins {
@@ -596,6 +597,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 					chromedp.Flag("enable-automation", false),
 					// chromedp.Flag("headless", false),
 				)
+				log.Print("append")
 				b.rw.Unlock()
 				ctxChr, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 				defer cancel()
