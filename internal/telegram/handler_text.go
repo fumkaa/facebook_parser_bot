@@ -551,7 +551,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			return nil
 		}
 
-		go func() {
+		go func(message *tgbotapi.Message) {
 			log.Print("!!!goruntine!!!")
 			msg := tgbotapi.NewMessage(message.Chat.ID, "Идет установка города в facebook...")
 			_, err = b.bot.Send(msg)
@@ -592,12 +592,12 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			for _, data := range datas {
 				b.rw.Lock()
 				opts := append(chromedp.DefaultExecAllocatorOptions[:],
-					chromedp.ProxyServer("http://"+data.Datas.IpPortPX),
+					chromedp.ProxyServer("https://"+data.Datas.IpPortPX),
 					chromedp.WindowSize(1900, 1080), // init with a desktop view
 					chromedp.Flag("enable-automation", false),
 					// chromedp.Flag("headless", false),
 				)
-				log.Print("append")
+				log.Printf("ip port proxy: %v", data.Datas.IpPortPX)
 				b.rw.Unlock()
 				ctxChr, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
 				defer cancel()
@@ -1079,7 +1079,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				}
 				break
 			}
-		}()
+		}(message)
 	}
 	return nil
 }

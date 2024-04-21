@@ -22,7 +22,8 @@ func (p *StrParser) SetProxy(ctx context.Context, data Data) {
 					Username: data.LoginPX,
 					Password: data.PassPX,
 				}
-
+				log.Printf("login proxy: %v", data.LoginPX)
+				log.Printf("pass proxy: %v", data.PassPX)
 				err := fetch.ContinueWithAuth(ev.RequestID, resp).Do(execCtx)
 				if err != nil {
 					log.Fatalf("ContinueWithAuth error: %v", err)

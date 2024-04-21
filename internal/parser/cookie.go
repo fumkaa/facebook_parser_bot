@@ -84,7 +84,7 @@ func (p *StrParser) checkAndSetCookie(ctx context.Context, data Datas) error {
 		log.Printf("run error: %v", err)
 		return ErrProxyConnectionFailed
 	}
-
+	log.Print("setCookies Navigate")
 	if err := chromedp.Run(ctx,
 		chromedp.Sleep(5*time.Second),
 		chromedp.Evaluate(fmt.Sprintf("document.querySelector(`h4[id=%q]`).textContent;", ":R1alalqlaiktl9aqqd9emhpapd5aq:"), &res),
