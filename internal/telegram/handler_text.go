@@ -1010,7 +1010,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 					DeleteFilter = false
 					return
 				}
-				if err := b.db.AddFilterFile(ctx, ID); err != nil {
+				if err := b.db.AddFilterFile(ctx, ID, data.FileName); err != nil {
 					log.Printf("AddFilterFile error: %v", err)
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
 					msg.ReplyMarkup = StartKeyboard

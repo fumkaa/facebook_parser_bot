@@ -258,14 +258,14 @@ func (s Storage) SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, er
 	return lo.Map(sources, func(source Filter, _ int) Filter { return Filter(source) }), nil
 }
 
-func (s Storage) AddFilterFile(ctx context.Context, id int) error {
+func (s Storage) AddFilterFile(ctx context.Context, id int, filterfile string) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return fmt.Errorf("[AddFilterFile]connection db error: %w", err)
 	}
 	defer conn.Close()
 
-	_, err = conn.ExecContext(ctx, `UPDATE data_filters SET filter_file = ? WHERE id = ?;`, id)
+	_, err = conn.ExecContext(ctx, `UPDATE data_filters SET filter_file = ? WHERE id = ?;`, filterfile, id)
 	if err != nil {
 		return fmt.Errorf("[AddFilterFile]set values city in db error: %w", err)
 	}
