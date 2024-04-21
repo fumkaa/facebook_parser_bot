@@ -11,7 +11,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -550,6 +549,37 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			}
 			return nil
 		}
+		log.Print("get data")
+		datas, err := b.parser.GetData()
+		if err == parser.ErrEmptyData {
+			for _, id := range Admins {
+				if message.Chat.ID != id {
+					msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Fatalf("[handleMessage]error send message: %v", err)
+					}
+					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+						log.Fatalf("delete wait message error: %v", err)
+					}
+					return nil
+				} else if message.Chat.ID == id {
+					msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Fatalf("[handleMessage]error send message: %v", err)
+
+					}
+					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+						log.Fatalf("delete wait message error: %v", err)
+					}
+					return nil
+				}
+			}
+		}
+		if err != nil && err != parser.ErrEmptyData {
+			log.Fatalf("get data error: %v", err)
+		}
 
 		go func(message *tgbotapi.Message) {
 			log.Print("!!!goruntine!!!")
@@ -558,41 +588,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			if err != nil {
 				log.Fatalf("[handleMessage]error send message: %v", err)
 			}
-			b.rw.Lock()
-			log.Print("get data")
-			datas, err := b.parser.GetData()
-			if err == parser.ErrEmptyData {
-				for _, id := range Admins {
-					if message.Chat.ID != id {
-						msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Fatalf("[handleMessage]error send message: %v", err)
-						}
-						if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-							log.Fatalf("delete wait message error: %v", err)
-						}
-						return
-					} else if message.Chat.ID == id {
-						msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Fatalf("[handleMessage]error send message: %v", err)
-
-						}
-						if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-							log.Fatalf("delete wait message error: %v", err)
-						}
-						return
-					}
-				}
-			}
-			if err != nil && err != parser.ErrEmptyData {
-				log.Fatalf("get data error: %v", err)
-			}
-			b.rw.Unlock()
 			log.Printf("!!!!!data: %v", datas)
-			var once sync.Once
 
 			for _, data := range datas {
 				b.rw.Lock()
@@ -619,14 +615,14 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				case parser.ErrProxyConnectionFailed:
 					for _, id := range Admins {
 						if message.Chat.ID != id {
-							once.Do(func() {
-								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-							})
+
+							msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+							msg.ReplyMarkup = StartKeyboard
+							_, err = b.bot.Send(msg)
+							if err != nil {
+								log.Fatalf("[handleMessage]error send message: %v", err)
+							}
+
 						} else if message.Chat.ID == id {
 							dataFile, err := os.ReadDir(parser.Free_account)
 							if err != nil {
