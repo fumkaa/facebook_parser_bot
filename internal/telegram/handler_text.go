@@ -569,6 +569,10 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 						if err != nil {
 							log.Fatalf("[handleMessage]error send message: %v", err)
 						}
+						if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+							log.Fatalf("delete wait message error: %v", err)
+						}
+						return
 					} else if message.Chat.ID == id {
 						msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
 						_, err = b.bot.Send(msg)
@@ -576,12 +580,12 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 							log.Fatalf("[handleMessage]error send message: %v", err)
 
 						}
+						if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+							log.Fatalf("delete wait message error: %v", err)
+						}
+						return
 					}
 				}
-				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-					log.Fatalf("delete wait message error: %v", err)
-				}
-				return
 			}
 			if err != nil && err != parser.ErrEmptyData {
 				log.Fatalf("get data error: %v", err)
