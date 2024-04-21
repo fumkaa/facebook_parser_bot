@@ -592,7 +592,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			for _, data := range datas {
 				b.rw.Lock()
 				opts := append(chromedp.DefaultExecAllocatorOptions[:],
-					chromedp.ProxyServer("https://"+data.Datas.IpPortPX),
+					chromedp.ProxyServer("http://"+data.Datas.IpPortPX),
 					chromedp.WindowSize(1900, 1080), // init with a desktop view
 					chromedp.Flag("enable-automation", false),
 					// chromedp.Flag("headless", false),
