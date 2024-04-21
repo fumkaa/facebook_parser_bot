@@ -796,8 +796,9 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				var isCorrect bool
 				callbackQuerySelectCity := <-ChSelectCity
 				for _, city := range cities {
+					log.Printf("city: %v", city)
 					if city == callbackQuerySelectCity.Data {
-
+						isCorrect = true
 						ID, err = b.db.AddChatIDFilters(ctx, int(message.Chat.ID))
 						if err != nil {
 							log.Printf("AddChatIDFilters error: %v", err)
@@ -819,7 +820,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 							DeleteFilter = false
 							return
 						}
-						isCorrect = true
+
 						log.Printf("callbackQuery: %v\ncities: %v", callbackQuerySelectCity.Data, city)
 						if err := b.handlerCityInlineKeyboard(ctxt, callbackQuerySelectCity); err != nil {
 							log.Printf("handlerCityInlineKeyboard error: %v", err)
