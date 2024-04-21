@@ -10,12 +10,16 @@ import (
 )
 
 var isDel = make(chan database.Filter)
+var filterFile = make(chan string)
 
 func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQuery, filter database.Filter) {
 	log.Printf("!!!!!!filter: %v", filter)
 	log.Printf("!!!!!!query: %v", query)
 	switch query.Data {
 	case "filter_id_" + filter.Id:
+		go func() {
+			filterFile <- filter.Filter_file
+		}()
 		id, err := strconv.Atoi(filter.Id)
 		if err != nil {
 			log.Fatal("err")
