@@ -70,7 +70,7 @@ func (p *StrParser) checkAndSetCookie(ctx context.Context, data Datas) error {
 
 	log.Print(data.FileName)
 	log.Print("set proxy")
-	// p.SetProxy(ctx, data.Datas)
+	p.SetProxy(ctx, data.Datas)
 	var cookies []Cookie
 	if err := json.Unmarshal([]byte(data.Datas.Cookies), &cookies); err != nil {
 		return fmt.Errorf("unmarshal cookie file error: %w", err)
