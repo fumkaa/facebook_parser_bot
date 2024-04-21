@@ -148,7 +148,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 		go func() {
 			<-isDel
 			file_name := <-filterFile
-			if err := os.Rename(parser.Free_account+file_name, parser.Work_account+file_name); err != nil {
+			if err := os.Rename(parser.Work_account+file_name, parser.Free_account+file_name); err != nil {
 				log.Printf("Rename error: %v", err)
 				msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова удалить фильтр")
 				msg.ReplyMarkup = StartKeyboard
