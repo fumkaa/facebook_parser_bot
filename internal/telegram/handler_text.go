@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -889,44 +890,66 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 						}
 						SelectCategory = sendmsg
 						go func() {
-							inPrice := <-ChInputPrice
-							log.Print(inPrice)
-							msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
+							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+							defer cancel()
+							select {
+							case <-ctx.Done():
+								return
+							case <-ChInputPrice:
+								msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Printf("error send message: %v", err)
+								}
+								InputPrice = true
 							}
-							InputPrice = true
+
 						}()
 
 						go func() {
-							inYear := <-ChInputYear
-							log.Print(inYear)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
+							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+							defer cancel()
+							select {
+							case <-ctx.Done():
+								return
+							case <-ChInputYear:
+								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Printf("error send message: %v", err)
+								}
+								InputYear = true
 							}
-							InputYear = true
 						}()
 						go func() {
-							inMet := <-ChSquareMet
-							log.Print(inMet)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
+							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+							defer cancel()
+							select {
+							case <-ctx.Done():
+								return
+							case <-ChSquareMet:
+								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Printf("error send message: %v", err)
+								}
+								InputMet = true
 							}
-							InputMet = true
 						}()
 						go func() {
-							<-ChInputMill
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
+							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+							defer cancel()
+							select {
+							case <-ctx.Done():
+								return
+							case <-ChInputMill:
+								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
+								_, err = b.bot.Send(msg)
+								if err != nil {
+									log.Printf("error send message: %v", err)
+								}
+								InputMill = true
 							}
-							InputMill = true
 						}()
 
 						url1 = <-ChUrl
