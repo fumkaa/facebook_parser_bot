@@ -798,8 +798,8 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					if err != nil {
 						log.Printf("error send message: %v", err)
 					}
-					<-ChBodyStyleAlfaRomeo
 					b.handleBodyStyle(query, &url)
+					<-ChBodyStyleAlfaRomeo
 					ChInputMill <- query
 					minMill := <-ChMinMill
 					maxMill := <-ChMaxMill
