@@ -776,6 +776,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				SelectCity = true
 				var isCorrect bool
 				callbackQuerySelectCity := <-ChSelectCity
+				log.Printf("callbackQuerySelectCity: %v", callbackQuerySelectCity)
 				for _, city := range cities {
 					log.Printf("city: %v", city)
 					if city == callbackQuerySelectCity.Data {
