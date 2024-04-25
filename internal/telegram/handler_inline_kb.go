@@ -743,7 +743,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					if err != nil {
 						log.Printf("error send message: %v", err)
 					}
-					b.handleBodyStyle(query, &url)
+
 					<-ChBodyStyleAlfaRomeo
 
 					ChInputMill <- query
@@ -799,7 +799,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					if err != nil {
 						log.Printf("error send message: %v", err)
 					}
-					b.handleBodyStyle(query, &url)
+
 					<-ChBodyStyleAlfaRomeo
 					ChInputMill <- query
 					minMill := <-ChMinMill
@@ -1759,7 +1759,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 	if err := b.handleCategory(query, message); err != nil {
 		return err
 	}
-
+	b.handleBodyStyle(query, &url)
 	b.handleRooms(query, &url)
 	b.handleTypeProperty(query, &url)
 	b.handleCondition(query, &url)
