@@ -11,35 +11,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 	switch query.Data {
 	case "next1":
 		switch {
-		case home_improvements:
+		case Home_improvements:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2home_improvements)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case classifieds:
+		case Classifieds:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2classifieds)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case apparel:
+		case Apparel:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2apparel)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case propertyforsale:
+		case Propertyforsale:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2propertyforsale)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case entertainment:
+		case Entertainment:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2entertainment)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -56,35 +56,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 	case "next2":
 		switch {
-		case family:
+		case Family:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3family)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case sports:
+		case Sports:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3sports)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case home:
+		case Home:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3home)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case pets:
+		case Pets:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3pets)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case office_supplies:
+		case Office_supplies:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3office_supplies)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -101,35 +101,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 	case "next3":
 		switch {
-		case garden:
+		case Garden:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4garden)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case hobbies:
+		case Hobbies:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4hobbies)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case electronics:
+		case Electronics:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4electronics)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case groups:
+		case Groups:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4groups)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case all_listings:
+		case All_listings:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4all_listings)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -146,35 +146,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 	case "previous1":
 		switch {
-		case vehicles:
+		case Vehicles:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1vehicles)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case propertyrentals:
+		case Propertyrentals:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1propertyrentals)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case free:
+		case Free:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1free)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case toys:
+		case Toys:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1toys)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case instruments:
+		case Instruments:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1instruments)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -191,35 +191,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 	case "previous2":
 		switch {
-		case home_improvements:
+		case Home_improvements:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2home_improvements)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case classifieds:
+		case Classifieds:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2classifieds)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case apparel:
+		case Apparel:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2apparel)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case propertyforsale:
+		case Propertyforsale:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2propertyforsale)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case entertainment:
+		case Entertainment:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2entertainment)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -236,35 +236,35 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 	case "previous3":
 		switch {
-		case family:
+		case Family:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3family)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case sports:
+		case Sports:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3sports)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case home:
+		case Home:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3home)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case pets:
+		case Pets:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3pets)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				return fmt.Errorf("send message error: %w", err)
 			}
 			message = msg
-		case office_supplies:
+		case Office_supplies:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3office_supplies)
 			msg, err := b.bot.Send(editInlineKB)
 			if err != nil {
@@ -280,31 +280,31 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 			message = msg
 		}
 	case "vehicles":
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
 
-		vehicles = true
-		log.Printf("vehicles: %t", vehicles)
+		Vehicles = true
+		log.Printf("vehicles: %t", Vehicles)
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1vehicles)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -312,7 +312,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "vehicles1":
-		vehicles = false
+		Vehicles = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -320,30 +320,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "propertyrentals":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		propertyrentals = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Propertyrentals = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1propertyrentals)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -351,7 +351,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "propertyrentals1":
-		propertyforsale = false
+		Propertyforsale = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -359,30 +359,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "free":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		free = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Free = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1free)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -390,7 +390,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "free1":
-		free = false
+		Free = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -398,30 +398,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "toys":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		toys = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Toys = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1toys)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -429,7 +429,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "toys1":
-		toys = false
+		Toys = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -437,30 +437,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "instruments":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		instruments = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Instruments = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1instruments)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -468,7 +468,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "instruments1":
-		instruments = false
+		Instruments = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard1)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -477,30 +477,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		message = msg
 
 	case "home_improvements":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		home_improvements = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Home_improvements = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2home_improvements)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -508,7 +508,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "home_improvements1":
-		home_improvements = false
+		Home_improvements = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -516,30 +516,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "classifieds":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		classifieds = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Classifieds = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2classifieds)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -547,7 +547,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "classifieds1":
-		classifieds = false
+		Classifieds = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -555,30 +555,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "apparel":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		apparel = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Apparel = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2apparel)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -586,7 +586,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "apparel1":
-		apparel = false
+		Apparel = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -594,30 +594,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "propertyforsale":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		propertyforsale = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Propertyforsale = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2propertyforsale)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -625,7 +625,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "propertyforsale1":
-		propertyforsale = false
+		Propertyforsale = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -633,30 +633,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "entertainment":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		entertainment = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Entertainment = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2entertainment)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -664,7 +664,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "entertainment1":
-		entertainment = false
+		Entertainment = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard2)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -673,30 +673,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		message = msg
 
 	case "family":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		family = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Family = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3family)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -704,7 +704,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "family1":
-		family = false
+		Family = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -712,30 +712,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "sports":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		sports = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Sports = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3sports)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -743,7 +743,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "sports1":
-		sports = false
+		Sports = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -751,30 +751,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "home":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		home = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Home = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3home)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -782,7 +782,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "home1":
-		home = false
+		Home = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -790,30 +790,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "pets":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		pets = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Pets = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3pets)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -821,7 +821,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "pets1":
-		pets = false
+		Pets = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -829,30 +829,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "office_supplies":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		office_supplies = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Office_supplies = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3office_supplies)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -860,7 +860,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "office_supplies1":
-		office_supplies = false
+		Office_supplies = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard3)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -869,30 +869,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		message = msg
 
 	case "garden":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		garden = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Garden = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4garden)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -900,7 +900,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "garden1":
-		garden = false
+		Garden = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -908,30 +908,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "hobbies":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		hobbies = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Hobbies = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4hobbies)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -939,7 +939,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "hobbies1":
-		hobbies = false
+		Hobbies = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -947,30 +947,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "electronics":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		electronics = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Electronics = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4electronics)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -978,7 +978,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "electronics1":
-		electronics = false
+		Electronics = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -986,30 +986,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "groups":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		groups = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		Groups = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4groups)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -1017,7 +1017,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "groups1":
-		groups = false
+		Groups = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -1025,30 +1025,30 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "all_listings":
-		vehicles = false
-		propertyrentals = false
-		free = false
-		toys = false
-		instruments = false
+		Vehicles = false
+		Propertyrentals = false
+		Free = false
+		Toys = false
+		Instruments = false
 
-		home_improvements = false
-		classifieds = false
-		apparel = false
-		propertyforsale = false
-		entertainment = false
+		Home_improvements = false
+		Classifieds = false
+		Apparel = false
+		Propertyforsale = false
+		Entertainment = false
 
-		family = false
-		sports = false
-		home = false
-		pets = false
-		office_supplies = false
+		Family = false
+		Sports = false
+		Home = false
+		Pets = false
+		Office_supplies = false
 
-		garden = false
-		hobbies = false
-		electronics = false
-		groups = false
-		all_listings = false
-		all_listings = true
+		Garden = false
+		Hobbies = false
+		Electronics = false
+		Groups = false
+		All_listings = false
+		All_listings = true
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4all_listings)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {
@@ -1056,7 +1056,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		}
 		message = msg
 	case "all_listings1":
-		all_listings = false
+		All_listings = false
 		editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, CategoryInlineKeyboard4)
 		msg, err := b.bot.Send(editInlineKB)
 		if err != nil {

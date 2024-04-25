@@ -908,54 +908,62 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 						}()
 
 						go func() {
-							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-							defer cancel()
-							select {
-							case <-ctx.Done():
-								return
-							case <-ChInputYear:
-								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Printf("error send message: %v", err)
+							for {
+								if Vehicles {
+									<-ChInputYear
+									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
+									_, err = b.bot.Send(msg)
+									if err != nil {
+										log.Printf("error send message: %v", err)
+									}
+									InputYear = true
+									return
+								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+									return
 								}
-								InputYear = true
 							}
 						}()
 						go func() {
-							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-							defer cancel()
-							select {
-							case <-ctx.Done():
-								return
-							case <-ChSquareMet:
-								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Printf("error send message: %v", err)
+							for {
+								if Propertyrentals {
+									<-ChSquareMet
+									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
+									_, err = b.bot.Send(msg)
+									if err != nil {
+										log.Printf("error send message: %v", err)
+									}
+									InputMet = true
+									return
+								} else if Vehicles || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+									return
 								}
-								InputMet = true
 							}
+
 						}()
 						go func() {
-							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-							defer cancel()
-							select {
-							case <-ctx.Done():
-								return
-							case <-ChInputMill:
-								msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Printf("error send message: %v", err)
+							for {
+								if Vehicles {
+									if All || Cars_and_lorries {
+										<-ChInputMill
+										msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
+										_, err = b.bot.Send(msg)
+										if err != nil {
+											log.Printf("error send message: %v", err)
+										}
+										InputMill = true
+										return
+									} else if Motorcycles || Powersports || Motorhomes_and_campers || Boats || Commercial_and_industrial || Trailers || Other {
+										return
+									}
+								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+									return
 								}
-								InputMill = true
 							}
 						}()
 
 						url1 = <-ChUrl
 						slcCat := <-ChSelectCategory
-						log.Print(slcCat)
+						log.Printf("slcCat: %v", slcCat)
 						if err := b.db.AddMonitoringFilter(ctx, ID, url1); err != nil {
 							log.Printf("AddMonitoringFilter error: %v", err)
 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, добавьте фильтр еще раз")

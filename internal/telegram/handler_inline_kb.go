@@ -32,40 +32,40 @@ const (
 )
 
 var (
-	vehicles        bool
-	propertyrentals bool
-	free            bool
-	toys            bool
-	instruments     bool
+	Vehicles        bool
+	Propertyrentals bool
+	Free            bool
+	Toys            bool
+	Instruments     bool
 
-	home_improvements bool
-	classifieds       bool
-	apparel           bool
-	propertyforsale   bool
-	entertainment     bool
+	Home_improvements bool
+	Classifieds       bool
+	Apparel           bool
+	Propertyforsale   bool
+	Entertainment     bool
 
-	family          bool
-	sports          bool
-	home            bool
-	pets            bool
-	office_supplies bool
+	Family          bool
+	Sports          bool
+	Home            bool
+	Pets            bool
+	Office_supplies bool
 
-	garden       bool
-	hobbies      bool
-	electronics  bool
-	groups       bool
-	all_listings bool
+	Garden       bool
+	Hobbies      bool
+	Electronics  bool
+	Groups       bool
+	All_listings bool
 )
 var (
-	all                       bool
-	cars_and_lorries          bool
-	motorcycles               bool
-	powersports               bool
-	motorhomes_and_campers    bool
-	boats                     bool
-	commercial_and_industrial bool
-	trailers                  bool
-	other                     bool
+	All                       bool
+	Cars_and_lorries          bool
+	Motorcycles               bool
+	Powersports               bool
+	Motorhomes_and_campers    bool
+	Boats                     bool
+	Commercial_and_industrial bool
+	Trailers                  bool
+	Other                     bool
 )
 
 const (
@@ -342,126 +342,126 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 			ChTranssmission <- query
 		}()
 	case "vehicles_type_all":
-		all = true
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = true
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_cars_and_lorries":
-		all = false
-		cars_and_lorries = true
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = true
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=car_truck"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_motorcycles":
-		all = false
-		cars_and_lorries = false
-		motorcycles = true
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = true
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=motorcycle"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_powersports":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = true
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = true
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=powersport"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_motorhomes_and_campers":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = true
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = true
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=rv_camper"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_boats":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = true
-		commercial_and_industrial = false
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = true
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=boat"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_commercial_and_industrial":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = true
-		trailers = false
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = true
+		Trailers = false
+		Other = false
 		url += "&topLevelVehicleType=commercial"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_trailers":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = true
-		other = false
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = true
+		Other = false
 		url += "&topLevelVehicleType=trailer"
 		go func() {
 			ChTypeVehicles <- query
 		}()
 	case "vehicles_type_other":
-		all = false
-		cars_and_lorries = false
-		motorcycles = false
-		powersports = false
-		motorhomes_and_campers = false
-		boats = false
-		commercial_and_industrial = false
-		trailers = false
-		other = true
+		All = false
+		Cars_and_lorries = false
+		Motorcycles = false
+		Powersports = false
+		Motorhomes_and_campers = false
+		Boats = false
+		Commercial_and_industrial = false
+		Trailers = false
+		Other = true
 		url += "&topLevelVehicleType=other"
 		go func() {
 			ChTypeVehicles <- query
@@ -676,9 +676,9 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 		}()
 	case "confirm":
 		log.Print("confirm")
-		log.Printf("vehicles: %t", vehicles)
+		log.Printf("vehicles: %t", Vehicles)
 		switch {
-		case vehicles:
+		case Vehicles:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "vehicles"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -719,7 +719,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				}
 				<-ChTypeVehicles
 				switch {
-				case all:
+				case All:
 
 					msg := tgbotapi.NewMessage(message.Chat.ID, "Выберите фирму транспортного средства:")
 					msg.ReplyMarkup = MakeInlineKeyboard
@@ -776,7 +776,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case cars_and_lorries:
+				case Cars_and_lorries:
 
 					msg := tgbotapi.NewMessage(message.Chat.ID, "Выберите фирму транспортного средства:")
 					msg.ReplyMarkup = MakeInlineKeyboard
@@ -831,7 +831,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case motorcycles:
+				case Motorcycles:
 					ChInputMill <- query
 					minMill := <-ChMinMill
 					maxMill := <-ChMaxMill
@@ -855,7 +855,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case powersports:
+				case Powersports:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -875,7 +875,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case motorhomes_and_campers:
+				case Motorhomes_and_campers:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -895,7 +895,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case boats:
+				case Boats:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -916,7 +916,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case commercial_and_industrial:
+				case Commercial_and_industrial:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -936,7 +936,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case trailers:
+				case Trailers:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -956,7 +956,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					ChUrl <- url
 					ChSelectCategory <- query
 					url = baseUrl
-				case other:
+				case Other:
 					msg = tgbotapi.NewMessage(message.Chat.ID, "Выберите внешний цвет транспортного средства:")
 					msg.ReplyMarkup = ExteriorColourInlineKeyboard
 					_, err = b.bot.Send(msg)
@@ -978,7 +978,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					url = baseUrl
 				}
 			}()
-		case propertyrentals:
+		case Propertyrentals:
 			go func() {
 
 				if err := b.db.AddCategoryFilter(ctx, ID, "propertyrentals"); err != nil {
@@ -1033,7 +1033,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case free:
+		case Free:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "free"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1064,7 +1064,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case toys:
+		case Toys:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "toys"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1105,7 +1105,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case instruments:
+		case Instruments:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "instruments"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1146,7 +1146,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case home_improvements:
+		case Home_improvements:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "home improvements"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1194,7 +1194,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case classifieds:
+		case Classifieds:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "classifieds"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1235,7 +1235,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case apparel:
+		case Apparel:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "apparel"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1276,7 +1276,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case propertyforsale:
+		case Propertyforsale:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "property for sale"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1310,7 +1310,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case entertainment:
+		case Entertainment:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "entertainment"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1351,7 +1351,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case family:
+		case Family:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "family"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1392,7 +1392,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case sports:
+		case Sports:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "sports"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1433,7 +1433,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case home:
+		case Home:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "home"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1474,7 +1474,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case pets:
+		case Pets:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "pets"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1515,7 +1515,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case office_supplies:
+		case Office_supplies:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "office supplies"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1556,7 +1556,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case garden:
+		case Garden:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "garden"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1597,7 +1597,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case hobbies:
+		case Hobbies:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "hobbies"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1638,7 +1638,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case electronics:
+		case Electronics:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "electronics"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1686,7 +1686,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case groups:
+		case Groups:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "groups"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
@@ -1717,7 +1717,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				ChSelectCategory <- query
 				url = baseUrl
 			}()
-		case all_listings:
+		case All_listings:
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "all listings"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
