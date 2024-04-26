@@ -31,8 +31,8 @@ services:
       dockerfile: ./volumes/build/migrate/Dockerfile
       context: ./
     container_name: migration
-    # command: ["-path", "/migrations", "-database", $CONN_URI_DB, "up"]
-    command: ["-path", "/migrations", "-database",  $CONN_URI_DB, "down", "-all"]
+    command: ["-path", "/migrations", "-database", $CONN_URI_DB, "up"]
+    # command: ["-path", "/migrations", "-database",  $CONN_URI_DB, "down", "-all"]
     # command: ["-path", "/migrations", "-database",  $CONN_URI_DB, "force", "1"]
     restart: on-failure
     depends_on:
