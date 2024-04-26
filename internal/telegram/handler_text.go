@@ -536,6 +536,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			for _, id := range Admins {
 				if message.Chat.ID != id {
 					msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
 						log.Fatalf("[handleMessage]error send message: %v", err)
