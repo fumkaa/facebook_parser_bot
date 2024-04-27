@@ -864,6 +864,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 										log.Printf("error send message: %v", err)
 									}
 									InputPrice = true
+									return
 								} else if Free || Groups || All_listings {
 									return
 								}
