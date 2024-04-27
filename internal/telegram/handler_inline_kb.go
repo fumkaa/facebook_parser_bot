@@ -103,6 +103,7 @@ var (
 )
 
 func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *tgbotapi.CallbackQuery, message tgbotapi.Message) error {
+
 	switch query.Data {
 	case "make_next":
 		MakeNext = true
@@ -677,6 +678,25 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 	case "confirm":
 		log.Print("confirm")
 		log.Printf("vehicles: %t", Vehicles)
+		log.Printf("Propertyrentals: %t", Propertyrentals)
+		log.Printf("Free: %t", Free)
+		log.Printf("Toys: %t", Toys)
+		log.Printf("Instruments: %t", Instruments)
+		log.Printf("Home_improvements: %t", Home_improvements)
+		log.Printf("Classifieds: %t", Classifieds)
+		log.Printf("Apparel: %t", Apparel)
+		log.Printf("Propertyforsale: %t", Propertyforsale)
+		log.Printf("Entertainment: %t", Entertainment)
+		log.Printf("Family: %t", Family)
+		log.Printf("Sports: %t", Sports)
+		log.Printf("Home: %t", Home)
+		log.Printf("Pets: %t", Pets)
+		log.Printf("Office_supplies: %t", Office_supplies)
+		log.Printf("Garden: %t", Garden)
+		log.Printf("Hobbies: %t", Hobbies)
+		log.Printf("Electronics: %t", Electronics)
+		log.Printf("Groups: %t", Groups)
+		log.Printf("All_listings: %t", All_listings)
 		switch {
 		case Vehicles:
 			go func() {
