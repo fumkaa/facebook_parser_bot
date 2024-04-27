@@ -11,7 +11,7 @@ type Database interface {
 	AddMonitoringFilter(ctx context.Context, id int, url string) error
 	MonitoringByIDFilter(ctx context.Context, id int) (string, error)
 	AddCityFilter(ctx context.Context, id int, city string) error
-	AddRadiusFilter(ctx context.Context, chat_id int, radius string) error
+	AddRadiusFilter(ctx context.Context, id int, radius string) error
 	AddCategoryFilter(ctx context.Context, id int, category string) error
 	DeleteFilter(ctx context.Context, id int) error
 	SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, error)

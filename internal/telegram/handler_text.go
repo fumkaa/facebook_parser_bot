@@ -145,57 +145,6 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 		}
 
 		return nil
-		// for i, filter := range filters {
-		// 	if int(message.Chat.ID) == filter.Chat_id {
-		// 		DeleteFilter = true
-		// 		FilterInlineKeyboard = tgbotapi.InlineKeyboardMarkup{}
-		// 		go func(filter database.Filter) {
-		// 			log.Print("wait get filter")
-		// 			ChFilter <- filter
-		// 			log.Print("set filter")
-		// 		}(filter)
-		// 		FilterInlineKeyboard.InlineKeyboard = append(FilterInlineKeyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(
-		// 			tgbotapi.NewInlineKeyboardButtonData("Удалить фильтр", "filter_id_"+filter.Id),
-		// 		))
-		// 		msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf("Фильтр №%d\nГород: %s\nРадиус: %s\nКатегория: %s", i+1, filter.City, filter.Radius, filter.Category))
-		// 		msg.ReplyMarkup = FilterInlineKeyboard
-		// 		_, err = b.bot.Send(msg)
-		// 		if err != nil {
-		// 			log.Fatalf("[handleMessage]error send message: %v", err)
-		// 		}
-		// 	}
-		// }
-		// go func() {
-		// 	<-isDel
-		// 	file_name := <-filterFile
-		// 	if err := os.Rename(parser.Work_account+file_name, parser.Free_account+file_name); err != nil {
-		// 		log.Printf("Rename error: %v", err)
-		// 		msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова удалить фильтр")
-		// 		msg.ReplyMarkup = StartKeyboard
-		// 		_, err = b.bot.Send(msg)
-		// 		if err != nil {
-		// 			log.Fatalf("[handleMessage]error send message: %v", err)
-		// 		}
-		// 		if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-		// 			log.Fatalf("delete wait message error: %v", err)
-		// 		}
-		// 		SelectCity = false
-		// 		SelectRadius = false
-		// 		SelectInlineKB = false
-		// 		InputPrice = false
-		// 		InputYear = false
-		// 		InputMill = false
-		// 		DeleteFilter = false
-		// 		return
-		// 	}
-		// 	msg := tgbotapi.NewMessage(message.Chat.ID, "Успешно удалено!")
-		// 	_, err = b.bot.Send(msg)
-		// 	if err != nil {
-		// 		log.Fatalf("[handleMessage]error send message: %v", err)
-		// 	}
-
-		// }()
-
 	}
 	if message.Text == "Отмена" && waitMsg {
 		if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
@@ -876,7 +825,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 							log.Printf("error send message: %v", err)
 							continue
 						}
-						if err := b.db.AddRadiusFilter(ctx, int(message.Chat.ID), callbackQuerySelectRadius.Data); err != nil {
+						if err := b.db.AddRadiusFilter(ctx, ID, callbackQuerySelectRadius.Data); err != nil {
 							log.Printf("AddRadiusFilter error: %v", err)
 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
 							msg.ReplyMarkup = StartKeyboard

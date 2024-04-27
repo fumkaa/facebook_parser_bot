@@ -160,14 +160,14 @@ func (s Storage) AddCityFilter(ctx context.Context, id int, city string) error {
 	}
 	return nil
 }
-func (s Storage) AddRadiusFilter(ctx context.Context, chat_id int, radius string) error {
+func (s Storage) AddRadiusFilter(ctx context.Context, id int, radius string) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {
 		return fmt.Errorf("[AddRadiusFilter]connection db error: %w", err)
 	}
 	defer conn.Close()
 
-	_, err = conn.ExecContext(ctx, `UPDATE data_filters SET radius = ? WHERE chat_id = ?;`, radius, chat_id)
+	_, err = conn.ExecContext(ctx, `UPDATE data_filters SET radius = ? WHERE id = ?;`, radius, id)
 	if err != nil {
 		return fmt.Errorf("[AddRadiusFilter]set values city in db error: %w", err)
 	}

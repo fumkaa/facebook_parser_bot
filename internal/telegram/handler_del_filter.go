@@ -76,14 +76,14 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			InputMill = false
 			return
 		}
-		filters = []database.Filter{}
+		var filters1 []database.Filter
 		for ind, filter := range filters {
 			if filter.Id == strconv.Itoa(id) {
 				for indx, filter := range filters {
 					if indx == ind {
 						continue
 					}
-					filters = append(filters, filter)
+					filters1 = append(filters, filter)
 				}
 
 			}
@@ -94,7 +94,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			log.Fatalf("[handleMessage]error send message: %v", err)
 		}
 		editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
-			fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters[0].City, filters[0].Radius, filters[0].Category),
+			fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters1[0].City, filters1[0].Radius, filters1[0].Category),
 			SelectFilters,
 		)
 		_, err = b.bot.Send(editInlineKB)
@@ -117,7 +117,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			InputMill = false
 			return
 		}
-		CurFilter = filters[0]
+		CurFilter = filters1[0]
 	case "select_filter_previous":
 		b.previousFilter(ctx, query, cur_filter, filters)
 	case "select_filter_next":
