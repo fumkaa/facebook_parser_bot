@@ -292,6 +292,36 @@ var HomeImprovementInlineKB = tgbotapi.NewInlineKeyboardMarkup(
 	),
 )
 
+var SelectFilters = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Удалить фильтр", "select_filter_delete"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("->", "select_filter_next"),
+	),
+)
+var SelectFilters3 = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Удалить фильтр", "select_filter_delete"),
+	),
+)
+var SelectFilters1 = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Удалить фильтр", "select_filter_delete"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("<-", "select_filter_previous"),
+		tgbotapi.NewInlineKeyboardButtonData("->", "select_filter_next"),
+	),
+)
+var SelectFilters2 = tgbotapi.NewInlineKeyboardMarkup(
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("Удалить фильтр", "select_filter_delete"),
+	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("<-", "select_filter_previous"),
+	),
+)
 var CityInlineKeyboard = tgbotapi.NewInlineKeyboardMarkup()
 var FilterInlineKeyboard = tgbotapi.NewInlineKeyboardMarkup()
 

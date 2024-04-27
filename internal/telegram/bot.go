@@ -68,6 +68,7 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 			}
 		} else if update.CallbackQuery != nil {
 			log.Print("update callback query")
+			b.handleDeleteFilter(ctx, update.CallbackQuery, CurFilter, Filters)
 			if SelectCity {
 				ChSelectCity <- update.CallbackQuery
 				log.Print("send update.CallbackQuery to ChSelectCity")
@@ -81,14 +82,6 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 				if err := b.handlerCategoryInlineKeyboard(ctx, ID, update.CallbackQuery, SelectCategory); err != nil {
 					return fmt.Errorf("handlerCategoryInlineKeyboard error: %w", err)
 				}
-			}
-			if DeleteFilter {
-				go func(query *tgbotapi.CallbackQuery) {
-					log.Print("DeleteFilter query")
-					filter := <-ChFilter
-					log.Print("get filter")
-					go b.handleDeleteFilter(ctx, query, filter)
-				}(update.CallbackQuery)
 			}
 		}
 
