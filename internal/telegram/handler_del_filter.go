@@ -83,6 +83,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		}
 		for ind, filter := range filters {
 			if cur_filter.Id == filter.Id {
+				log.Printf("!!!!!ind: %d", ind)
 				if ind == 0 {
 					b.nextFilter(ctx, query, cur_filter, filters)
 				} else if ind > 0 {
@@ -138,6 +139,7 @@ func (b *Bot) previousFilter(ctx context.Context, query *tgbotapi.CallbackQuery,
 func (b *Bot) nextFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur_filter database.Filter, filters []database.Filter) {
 	for ind, filter := range filters {
 		if cur_filter.Id == filter.Id {
+			log.Printf("!!!!!ind: %d\nlen filter: %d", ind, len(filters))
 			editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
 				fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters[ind+1].City, filters[ind+1].Radius, filters[ind+1].Category),
 				func() tgbotapi.InlineKeyboardMarkup {
