@@ -28,7 +28,6 @@ var (
 	InputYear        bool
 	InputMet         bool
 	InputMill        bool
-	CancelFind       bool
 	SelectCategory   tgbotapi.Message
 	ChInputPrice     = make(chan *tgbotapi.CallbackQuery)
 	ChInputMMPrice   = make(chan int)
@@ -173,7 +172,6 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			InputMill = false
 			return nil
 		}
-		CancelFind = true
 		SelectCity = false
 		SelectRadius = false
 		SelectInlineKB = false
@@ -557,14 +555,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				ctxt, cancel := chromedp.NewContext(ctxChr) // chromedp.WithDebugf(log.Printf),
 
 				defer cancel()
-				go func() {
-					for {
-						if CancelFind {
-							chromedp.Cancel(ctxt)
-							CancelFind = false
-						}
-					}
-				}()
+				defer chromedp.Cancel(ctxt)
 
 				log.Print("!!!settings!!!")
 				b.rw.Lock()
