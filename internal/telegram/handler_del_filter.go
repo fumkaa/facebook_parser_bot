@@ -93,6 +93,16 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		if err != nil {
 			log.Fatalf("[handleMessage]error send message: %v", err)
 		}
+		if len(filters1) == 0 || filters1 == nil {
+			msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Вы удалили все фильтры!")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
+			CurFilter = database.Filter{}
+			return
+		}
 		editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
 			fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters1[0].City, filters1[0].Radius, filters1[0].Category),
 			SelectFilters,
@@ -100,7 +110,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		_, err = b.bot.Send(editInlineKB)
 		if err != nil {
 			log.Printf("send message error: %v", err)
-			msg := tgbotapi.NewMessage(query.From.ID, "Произошла ошибка попробуйте снова")
+			msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка попробуйте снова")
 			msg.ReplyMarkup = StartKeyboard
 			_, err = b.bot.Send(msg)
 			if err != nil {
@@ -141,7 +151,7 @@ func (b *Bot) previousFilter(ctx context.Context, query *tgbotapi.CallbackQuery,
 			_, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				log.Printf("send message error: %v", err)
-				msg := tgbotapi.NewMessage(query.From.ID, "Произошла ошибка попробуйте снова")
+				msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка попробуйте снова")
 				msg.ReplyMarkup = StartKeyboard
 				_, err = b.bot.Send(msg)
 				if err != nil {
@@ -180,7 +190,7 @@ func (b *Bot) nextFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur
 			_, err := b.bot.Send(editInlineKB)
 			if err != nil {
 				log.Printf("send message error: %v", err)
-				msg := tgbotapi.NewMessage(query.From.ID, "Произошла ошибка попробуйте снова")
+				msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка попробуйте снова")
 				msg.ReplyMarkup = StartKeyboard
 				_, err = b.bot.Send(msg)
 				if err != nil {
