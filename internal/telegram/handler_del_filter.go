@@ -100,7 +100,13 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		}
 		editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
 			fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters1[0].City, filters1[0].Radius, filters1[0].Category),
-			SelectFilters,
+			func() tgbotapi.InlineKeyboardMarkup {
+				if len(filters1) == 1 {
+					return SelectFilters3
+				} else {
+					return SelectFilters
+				}
+			}(),
 		)
 		_, err = b.bot.Send(editInlineKB)
 		if err != nil {

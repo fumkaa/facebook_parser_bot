@@ -1066,6 +1066,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 			}()
 		case Toys:
 			go func() {
+				log.Print("Toys")
 				if err := b.db.AddCategoryFilter(ctx, ID, "toys"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
 					msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")

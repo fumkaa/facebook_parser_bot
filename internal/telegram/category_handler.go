@@ -401,7 +401,6 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery, message tgbotapi.Mes
 		Vehicles = false
 		Propertyrentals = false
 		Free = false
-		Toys = false
 		Instruments = false
 
 		Home_improvements = false
