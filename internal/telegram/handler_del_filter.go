@@ -77,7 +77,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			return
 		}
 		msg := tgbotapi.NewCallback(query.ID, "Успешно удалено!")
-		_, err = b.bot.Send(msg)
+		_, err = b.bot.Request(msg)
 		if err != nil {
 			log.Fatalf("[handleMessage]error send message: %v", err)
 		}
@@ -143,7 +143,7 @@ func (b *Bot) nextFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur
 			editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
 				fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters[ind+1].City, filters[ind+1].Radius, filters[ind+1].Category),
 				func() tgbotapi.InlineKeyboardMarkup {
-					if ind+1 == len(filters) {
+					if ind+1 == len(filters)-1 {
 						return SelectFilters2
 					} else {
 						return SelectFilters1
