@@ -76,21 +76,48 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			InputMill = false
 			return
 		}
+		filters = []database.Filter{}
+		for ind, filter := range filters {
+			if filter.Id == strconv.Itoa(id) {
+				for indx, filter := range filters {
+					if indx == ind {
+						continue
+					}
+					filters = append(filters, filter)
+				}
+
+			}
+		}
 		msg := tgbotapi.NewCallback(query.ID, "Успешно удалено!")
 		_, err = b.bot.Request(msg)
 		if err != nil {
 			log.Fatalf("[handleMessage]error send message: %v", err)
 		}
-		for ind, filter := range filters {
-			if cur_filter.Id == filter.Id {
-				log.Printf("!!!!!ind: %d", ind)
-				if ind == 0 {
-					b.nextFilter(ctx, query, cur_filter, filters)
-				} else if ind > 0 {
-					b.previousFilter(ctx, query, cur_filter, filters)
-				}
+		editInlineKB := tgbotapi.NewEditMessageTextAndMarkup(query.Message.Chat.ID, query.Message.MessageID,
+			fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", filters[0].City, filters[0].Radius, filters[0].Category),
+			SelectFilters,
+		)
+		_, err = b.bot.Send(editInlineKB)
+		if err != nil {
+			log.Printf("send message error: %v", err)
+			msg := tgbotapi.NewMessage(query.From.ID, "Произошла ошибка попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
 			}
+			if err := b.db.DeleteWaitMessage(ctx, int(query.Message.Chat.ID)); err != nil {
+				log.Fatalf("delete wait message error: %v", err)
+			}
+			SelectCity = false
+			SelectRadius = false
+			SelectInlineKB = false
+			InputPrice = false
+			InputYear = false
+			InputMill = false
+			return
 		}
+		CurFilter = filters[0]
 	case "select_filter_previous":
 		b.previousFilter(ctx, query, cur_filter, filters)
 	case "select_filter_next":
