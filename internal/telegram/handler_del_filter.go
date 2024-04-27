@@ -19,20 +19,6 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 	log.Printf("!!!!!!filter: %v", cur_filter)
 	log.Printf("!!!!!!query: %v", query)
 	switch query.Data {
-	// case "filter_id_" + filter.Id:
-	// 	go func() {
-	// 		filterFile <- filter.Filter_file
-	// 	}()
-	// 	id, err := strconv.Atoi(filter.Id)
-	// 	if err != nil {
-	// 		log.Fatal("err")
-	// 	}
-	// 	if err := b.db.DeleteFilter(ctx, id); err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	go func() {
-	// 		isDel <- filter
-	// 	}()
 	case "select_filter_delete":
 		id, err := strconv.Atoi(cur_filter.Id)
 		if err != nil {

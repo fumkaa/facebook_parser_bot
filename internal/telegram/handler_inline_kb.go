@@ -727,6 +727,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 				url += fmt.Sprintf("?minPrice=%s&maxPrice=%s", minPrice, maxPrice)
 				log.Printf("vehicles url: %s", url)
 				ChInputYear <- query
+				log.Print("set ChInputYear")
 				minYear := <-ChMinYear
 				maxYear := <-ChMaxYear
 				url += fmt.Sprintf("&maxYear=%s&minYear=%s", maxYear, minYear)
@@ -738,6 +739,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, ID int, query *
 					log.Printf("error send message: %v", err)
 				}
 				<-ChTypeVehicles
+				log.Print("set ChTypeVehicles")
 				switch {
 				case All:
 

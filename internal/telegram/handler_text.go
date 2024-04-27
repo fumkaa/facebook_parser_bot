@@ -28,6 +28,7 @@ var (
 	InputYear        bool
 	InputMet         bool
 	InputMill        bool
+	CancelFind       bool
 	SelectCategory   tgbotapi.Message
 	ChInputPrice     = make(chan *tgbotapi.CallbackQuery)
 	ChInputMMPrice   = make(chan int)
@@ -172,6 +173,7 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 			InputMill = false
 			return nil
 		}
+		CancelFind = true
 		SelectCity = false
 		SelectRadius = false
 		SelectInlineKB = false
@@ -555,7 +557,15 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 				ctxt, cancel := chromedp.NewContext(ctxChr) // chromedp.WithDebugf(log.Printf),
 
 				defer cancel()
-				defer chromedp.Cancel(ctxt)
+				go func() {
+					for {
+						if CancelFind {
+							chromedp.Cancel(ctxt)
+							CancelFind = false
+						}
+					}
+				}()
+
 				log.Print("!!!settings!!!")
 				b.rw.Lock()
 				err = b.parser.Settings(ctxt, data)
@@ -875,7 +885,9 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 						go func() {
 							for {
 								if Vehicles {
+									log.Print("wait ChInputYear")
 									<-ChInputYear
+									log.Print("get ChInputYear")
 									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
 									_, err = b.bot.Send(msg)
 									if err != nil {
@@ -909,7 +921,9 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 							for {
 								if Vehicles {
 									if All || Cars_and_lorries {
+										log.Print("wait ChInputMill")
 										<-ChInputMill
+										log.Print("get ChInputMill")
 										msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
 										_, err = b.bot.Send(msg)
 										if err != nil {
