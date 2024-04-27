@@ -11,7 +11,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -72,6 +71,7 @@ func (b *Bot) handleFile(message *tgbotapi.Message) error {
 		return fmt.Errorf("[handleFile]error write : %w", err)
 	}
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Файл успешно сохранен!")
+	msg.ReplyMarkup = StartKeyboard
 	_, err = b.bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("[handleFile]error send message: %w", err)
@@ -906,18 +906,18 @@ func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) erro
 						}
 						SelectCategory = sendmsg
 						go func() {
-							ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-							defer cancel()
-							select {
-							case <-ctx.Done():
-								return
-							case <-ChInputPrice:
-								msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Printf("error send message: %v", err)
+							for {
+								if Vehicles || Propertyrentals || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics {
+									<-ChInputPrice
+									msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
+									_, err = b.bot.Send(msg)
+									if err != nil {
+										log.Printf("error send message: %v", err)
+									}
+									InputPrice = true
+								} else if Free || Groups || All_listings {
+									return
 								}
-								InputPrice = true
 							}
 
 						}()
