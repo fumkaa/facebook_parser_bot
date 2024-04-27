@@ -79,15 +79,10 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		var filters1 []database.Filter
 		for ind, filter := range filters {
 			if filter.Id == strconv.Itoa(id) {
-				for indx, filter := range filters {
-					if indx == ind {
-						continue
-					}
-					filters1 = append(filters, filter)
-				}
-
+				filters1 = append(filters[:ind], filters[ind+1:]...)
 			}
 		}
+		log.Printf("!!!!!!!!!!!!!!!!!filters: %v\nfilters1: %v", filters, filters1)
 		msg := tgbotapi.NewCallback(query.ID, "Успешно удалено!")
 		_, err = b.bot.Request(msg)
 		if err != nil {
