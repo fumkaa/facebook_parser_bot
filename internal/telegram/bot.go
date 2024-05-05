@@ -53,7 +53,7 @@ func NewBot(bot *tgbotapi.BotAPI, db database.Database, parser parser.Parser) Bo
 
 				{Name: state_set_city, Src: []string{state_base}, Dst: state_set_city},
 				{Name: state_set_radius, Src: []string{state_set_city}, Dst: state_set_radius},
-				{Name: state_select_category, Src: []string{state_set_radius}, Dst: state_select_category},
+				{Name: state_select_category, Src: []string{state_set_radius, state_input_price, state_input_square_meters, state_input_year, state_input_mill}, Dst: state_select_category},
 
 				{Name: state_input_price, Src: []string{state_select_category}, Dst: state_input_price},
 				{Name: state_input_square_meters, Src: []string{state_select_category}, Dst: state_input_square_meters},
