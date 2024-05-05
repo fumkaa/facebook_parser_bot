@@ -14,29 +14,22 @@ import (
 )
 
 var (
-	idAd     int
-	isCancel bool
-	ChId     = make(chan int)
+	idAd int
+	ChId = make(chan int)
 )
 
 func (p *StrParser) Monitoring(ctx context.Context, url string, id int) error {
-	isCancel = false
 	for {
 		log.Print("MONITORING......")
 
 		_, err := p.db.MonitoringByIDFilter(ctx, id)
 		if err == database.ErrNoRows {
-			isCancel = true
 			log.Printf("END MONITORING  BY ID %d", id)
+			break
 		}
 		if err != nil && err != database.ErrNoRows {
 			log.Printf("MonitoringByIDFilter eror: %v", err)
 			return nil
-		}
-
-		if isCancel {
-			log.Printf("END MONITORING BY ID %d", id)
-			break
 		}
 		var (
 			nodes   []*cdp.Node

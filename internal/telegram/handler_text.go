@@ -1,33 +1,27 @@
 package telegram
 
 import (
-	"context"
 	database "facebook_marketplace_bot/internal/database/migration"
-	"facebook_marketplace_bot/internal/parser"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
-	"strconv"
-	"strings"
 
-	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 var (
-	ID               int
-	url1             string
-	CurFilter        database.Filter
-	Filters          []database.Filter
-	SelectCity       bool
-	SelectRadius     bool
-	SelectInlineKB   bool
-	InputPrice       bool
-	InputYear        bool
-	InputMet         bool
-	InputMill        bool
+	ID int
+	// url1             string
+	CurFilter database.Filter
+	Filters   []database.Filter
+	// SelectCity       bool
+	// SelectRadius     bool
+	// SelectInlineKB   bool
+	// InputPrice       bool
+	// InputYear        bool
+	// InputMet         bool
+	// InputMill        bool
 	SelectCategory   tgbotapi.Message
 	ChInputPrice     = make(chan *tgbotapi.CallbackQuery)
 	ChInputMMPrice   = make(chan int)
@@ -79,988 +73,960 @@ func (b *Bot) handleFile(message *tgbotapi.Message) error {
 
 	return nil
 }
-func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) error {
 
-	log.Printf("[%s] %s", message.From.UserName, message.Text)
-	waitMsg, err := b.db.WaitMessage(ctx, int(message.Chat.ID))
-	if err != nil {
-		return fmt.Errorf("get wait message error: %w", err)
-	}
-	if message.Text == "Добавить фильтр" && !waitMsg {
-		if err := b.db.AddWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-			return fmt.Errorf("add wait message error: %w", err)
-		}
-		msg := tgbotapi.NewMessage(message.Chat.ID, replySetCity)
-		msg.ReplyMarkup = CancelKeyboard
-		_, err := b.bot.Send(msg)
-		if err != nil {
-			return fmt.Errorf("[handleMessage]error send message: %w", err)
-		}
-	} else if message.Text == "Мои фильтры" && !waitMsg {
-		Filters, err = b.db.SelectAllFilter(ctx, int(message.Chat.ID))
-		if err != nil {
-			log.Printf("SelectAllFilter error: %v", err)
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-				log.Fatalf("delete wait message error: %v", err)
-			}
-			SelectCity = false
-			SelectRadius = false
-			SelectInlineKB = false
-			InputPrice = false
-			InputYear = false
-			InputMill = false
-			return nil
-		}
-		if len(Filters) == 0 || Filters == nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Вы еще не добавляли фильтров!")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			return nil
-		}
-		if len(Filters) == 1 {
-			msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", Filters[0].City, Filters[0].Radius, Filters[0].Category))
-			msg.ReplyMarkup = SelectFilters3
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			CurFilter = Filters[0]
-		} else {
-			msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", Filters[0].City, Filters[0].Radius, Filters[0].Category))
-			msg.ReplyMarkup = SelectFilters
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			CurFilter = Filters[0]
-		}
-
-		return nil
-	}
-	if message.Text == "Отмена" && waitMsg {
-		if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-			return fmt.Errorf("delete wait message error: %w", err)
-		}
-		msg := tgbotapi.NewMessage(message.Chat.ID, replyCancel)
-		msg.ReplyMarkup = StartKeyboard
-		_, err := b.bot.Send(msg)
-		if err != nil {
-			return fmt.Errorf("[handleMessage]error send message: %w", err)
-		}
-		if err := b.db.DeleteFilter(ctx, ID); err != nil {
-			log.Printf("DeleteFilter error: %v", err)
-			msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова отменить добавление фильтра")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			SelectCity = false
-			SelectRadius = false
-			SelectInlineKB = false
-			InputPrice = false
-			InputYear = false
-			InputMill = false
-			return nil
-		}
-		SelectCity = false
-		SelectRadius = false
-		SelectInlineKB = false
-		InputPrice = false
-		InputYear = false
-		InputMill = false
-		return nil
-	}
-
-	if InputPrice {
-		log.Print("InputPrice ")
-		var (
-			num1 string
-			num2 string
-		)
-
-		price := strings.TrimSpace(message.Text)
-		minMax := strings.Split(price, ",")
-		if len(minMax) > 2 {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 числа!")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		for ind, nums := range minMax {
-			num := strings.Split(nums, "")
-			log.Printf("num: %s", num)
-			for _, n := range num {
-				log.Printf("n: %s", n)
-				if n == " " {
-					continue
-				}
-				_, err := strconv.Atoi(n)
-				if err != nil {
-					log.Printf("Atoi err: %v", err)
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только числа без лишних символов!")
-					_, err := b.bot.Send(msg)
-					if err != nil {
-						return fmt.Errorf("[handleMessage]error send message: %w", err)
-					}
-					return nil
-				}
-				if ind == 0 {
-					num1 += n
-				} else if ind == 1 {
-					num2 += n
-				}
-			}
-		}
-		n1, err := strconv.Atoi(num1)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, введите максимальную и минимальную цену еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		n2, err := strconv.Atoi(num2)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, введите максимальную и минимальную цену еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		if n1 > n2 {
-			go func() {
-				ChMinPrice <- num2
-				ChMaxPrice <- num1
-			}()
-		} else if n2 > n1 {
-			go func() {
-				ChMinPrice <- num1
-				ChMaxPrice <- num2
-			}()
-		} else if n1 == n2 {
-			go func() {
-				ChMinPrice <- num1
-				ChMaxPrice <- num2
-			}()
-		}
-		InputPrice = false
-		return nil
-	}
-	if InputMet {
-		log.Print("InputPrice ")
-		var (
-			num1 string
-			num2 string
-		)
-
-		price := strings.TrimSpace(message.Text)
-		minMax := strings.Split(price, ",")
-		if len(minMax) > 2 {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 числа!")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		for ind, nums := range minMax {
-			num := strings.Split(nums, "")
-			log.Printf("num: %s", num)
-			for _, n := range num {
-				log.Printf("n: %s", n)
-				if n == " " {
-					continue
-				}
-				_, err := strconv.Atoi(n)
-				if err != nil {
-					log.Printf("Atoi err: %v", err)
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только числа без лишних символов!")
-					_, err := b.bot.Send(msg)
-					if err != nil {
-						return fmt.Errorf("[handleMessage]error send message: %w", err)
-					}
-					return nil
-				}
-				if ind == 0 {
-					num1 += n
-				} else if ind == 1 {
-					num2 += n
-				}
-			}
-		}
-		n1, err := strconv.Atoi(num1)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальные и минимальные квадратные метры еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		n2, err := strconv.Atoi(num2)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальные и минимальные квадратные метры еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		if n1 > n2 {
-			go func() {
-				ChMinMet <- num2
-				ChMaxMet <- num1
-			}()
-		} else if n2 > n1 {
-			go func() {
-				ChMinMet <- num1
-				ChMaxMet <- num2
-			}()
-		} else if n1 == n2 {
-			go func() {
-				ChMinMet <- num1
-				ChMaxMet <- num2
-			}()
-		}
-		InputMet = false
-		return nil
-	}
-	if InputYear {
-		var (
-			num1 string
-			num2 string
-		)
-		price := strings.TrimSpace(message.Text)
-		minMax := strings.Split(price, ",")
-		if len(minMax) > 2 {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 года!")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		for ind, nums := range minMax {
-			num := strings.Split(nums, "")
-			for _, n := range num {
-				if n == " " {
-					continue
-				}
-				_, err := strconv.Atoi(n)
-				if err != nil {
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только года без лишних символов!")
-					_, err := b.bot.Send(msg)
-					if err != nil {
-						return fmt.Errorf("[handleMessage]error send message: %w", err)
-					}
-					return nil
-				}
-				if ind == 0 {
-					num1 += n
-				} else if ind == 1 {
-					num2 += n
-				}
-			}
-		}
-		n1, err := strconv.Atoi(num1)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный год еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		n2, err := strconv.Atoi(num2)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный год еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		if n1 > n2 {
-			go func() {
-				ChMinYear <- num2
-				ChMaxYear <- num1
-			}()
-		} else if n2 > n1 {
-			go func() {
-				ChMinYear <- num1
-				ChMaxYear <- num2
-			}()
-		} else if n1 == n2 {
-			go func() {
-				ChMinYear <- num1
-				ChMaxYear <- num2
-			}()
-		}
-		InputYear = false
-		return nil
-	}
-	if InputMill {
-		var (
-			num1 string
-			num2 string
-		)
-		price := strings.TrimSpace(message.Text)
-		minMax := strings.Split(price, ",")
-		if len(minMax) > 2 {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 пробега!")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		for ind, nums := range minMax {
-			num := strings.Split(nums, "")
-			for _, n := range num {
-				if n == " " {
-					continue
-				}
-				_, err := strconv.Atoi(n)
-				if err != nil {
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только пробег без лишних символов!")
-					_, err := b.bot.Send(msg)
-					if err != nil {
-						return fmt.Errorf("[handleMessage]error send message: %w", err)
-					}
-					return nil
-				}
-				if ind == 0 {
-					num1 += n
-				} else if ind == 1 {
-					num2 += n
-				}
-			}
-		}
-		n1, err := strconv.Atoi(num1)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный пробег еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		n2, err := strconv.Atoi(num2)
-		if err != nil {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный пробег еще раз")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		if n1 > n2 {
-			go func() {
-				ChMinMill <- num2
-				ChMaxMill <- num1
-			}()
-		} else if n2 > n1 {
-			go func() {
-				ChMinMill <- num1
-				ChMaxMill <- num2
-			}()
-		} else if n1 == n2 {
-			go func() {
-				ChMinMill <- num1
-				ChMaxMill <- num2
-			}()
-		}
-		InputMill = false
-		return nil
-	}
-	if waitMsg {
-		if message.Text == "Добавить фильтр" || message.Text == "Мои фильтры" || message.Text == "Отмена" {
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи корректное название города!")
-			_, err := b.bot.Send(msg)
-			if err != nil {
-				return fmt.Errorf("[handleMessage]error send message: %w", err)
-			}
-			return nil
-		}
-		log.Print("get data")
-		datas, err := b.parser.GetData()
-		if err == parser.ErrEmptyData {
-			for _, id := range Admins {
-				if message.Chat.ID != id {
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-					msg.ReplyMarkup = StartKeyboard
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					return nil
-				} else if message.Chat.ID == id {
-					msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					return nil
-				}
-			}
-		}
-		if err != nil && err != parser.ErrEmptyData {
-			log.Fatalf("get data error: %v", err)
-		}
-
-		go func(message *tgbotapi.Message) {
-			log.Print("!!!goruntine!!!")
-			msg := tgbotapi.NewMessage(message.Chat.ID, "Идет установка города в facebook...")
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			log.Printf("!!!!!data: %v", datas)
-
-			for _, data := range datas {
-				b.rw.Lock()
-				proxy := fmt.Sprintf("http://%s", data.Datas.IpPortPX)
-				log.Printf("proxy: %s", proxy)
-				opts := append(chromedp.DefaultExecAllocatorOptions[:],
-					chromedp.ProxyServer(proxy),
-					chromedp.WindowSize(1900, 1080), // init with a desktop view
-					chromedp.Flag("enable-automation", false),
-					// chromedp.Flag("headless", false),
-				)
-				log.Printf("ip port proxy: %v", data.Datas.IpPortPX)
-				b.rw.Unlock()
-				ctxChr, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
-				defer cancel()
-				ctxt, cancel := chromedp.NewContext(ctxChr) // chromedp.WithDebugf(log.Printf),
-
-				defer cancel()
-				defer chromedp.Cancel(ctxt)
-
-				log.Print("!!!settings!!!")
-				b.rw.Lock()
-				err = b.parser.Settings(ctxt, data)
-				switch err {
-				case parser.ErrProxyConnectionFailed:
-					for _, id := range Admins {
-						if message.Chat.ID != id {
-
-							msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
-
-						} else if message.Chat.ID == id {
-							dataFile, err := os.ReadDir(parser.Free_account)
-							if err != nil {
-								log.Printf("ReadDir error: %v", err)
-								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-							}
-							if len(dataFile) == 0 {
-								for _, id := range Admins {
-									if message.Chat.ID != id {
-										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-										_, err = b.bot.Send(msg)
-										if err != nil {
-											log.Fatalf("[handleMessage]error send message: %v", err)
-										}
-									} else if message.Chat.ID == id {
-										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
-										_, err = b.bot.Send(msg)
-										if err != nil {
-											log.Fatalf("[handleMessage]error send message: %v", err)
-
-										}
-									}
-								}
-							}
-							for _, file := range dataFile {
-								if file.Name() == data.FileName {
-									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
-										log.Printf("remove error: %v", err)
-										for _, id := range Admins {
-											if message.Chat.ID != id {
-												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-												_, err = b.bot.Send(msg)
-												if err != nil {
-													log.Fatalf("[handleMessage]error send message: %v", err)
-												}
-											} else if message.Chat.ID == id {
-												msg := tgbotapi.NewMessage(id, "Ошибка при удалении аккаунта с не валидными прокси")
-												_, err = b.bot.Send(msg)
-												if err != nil {
-													log.Fatalf("[handleMessage]error send message: %v", err)
-
-												}
-											}
-										}
-									}
-									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: не валидные прокси в файле: "+data.FileName)
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Fatalf("[handleMessage]error send message: %v", err)
-									}
-								}
-							}
-
-						}
-
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					b.rw.Unlock()
-					continue
-				case parser.ErrAccountBanned:
-					for _, id := range Admins {
-						if message.Chat.ID == id {
-							dataFile, err := os.ReadDir(parser.Free_account)
-							if err != nil {
-								log.Printf("ReadDir error: %v", err)
-								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-							}
-							if len(dataFile) == 0 {
-								for _, id := range Admins {
-									if message.Chat.ID != id {
-										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-										_, err = b.bot.Send(msg)
-										if err != nil {
-											log.Fatalf("[handleMessage]error send message: %v", err)
-										}
-									} else if message.Chat.ID == id {
-										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
-										_, err = b.bot.Send(msg)
-										if err != nil {
-											log.Fatalf("[handleMessage]error send message: %v", err)
-
-										}
-									}
-								}
-							}
-							for _, file := range dataFile {
-								if file.Name() == data.FileName {
-									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
-										log.Printf("remove error: %v", err)
-										for _, id := range Admins {
-											if message.Chat.ID != id {
-												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
-												_, err = b.bot.Send(msg)
-												if err != nil {
-													log.Fatalf("[handleMessage]error send message: %v", err)
-												}
-											} else if message.Chat.ID == id {
-												msg := tgbotapi.NewMessage(id, "Ошибка при удалении забаненного аккаунта")
-												_, err = b.bot.Send(msg)
-												if err != nil {
-													log.Fatalf("[handleMessage]error send message: %v", err)
-
-												}
-											}
-										}
-									}
-									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: аккаунт забаннен, файл: "+data.FileName)
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Fatalf("[handleMessage]error send message: %v", err)
-									}
-								}
-							}
-
-						}
-					}
-					b.rw.Unlock()
-					continue
-				}
-				if err != nil && err != parser.ErrEmptyData && err != parser.ErrAccountBanned {
-					log.Printf("settings error: %v", err)
-					b.rw.Unlock()
-					continue
-				}
-				b.rw.Unlock()
-				log.Print("!!!end settings!!!")
-				log.Printf("city: %s", message.Text)
-				cities, err := b.parser.SelectCity(ctxt, message.Text)
-				if err != nil {
-					log.Printf("select city error: %v", err)
-					msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
-					b.bot.Send(msg)
-					continue
-				}
-				if len(cities) == 0 {
-					msg := tgbotapi.NewMessage(message.Chat.ID, "Было введено не корректное название города!")
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Printf("[handleMessage]error send message: %v", err)
-
-					}
-					return
-				}
-
-				for _, city := range cities {
-					CityInlineKeyboard.InlineKeyboard = append(CityInlineKeyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(
-						tgbotapi.NewInlineKeyboardButtonData(city, city),
-					))
-				}
-				msg = tgbotapi.NewMessage(message.Chat.ID, replySelectCity)
-				msg.ReplyMarkup = CityInlineKeyboard
-				_, err = b.bot.Send(msg)
-				if err != nil {
-					log.Printf("[handleMessage]error send message: %v", err)
-					continue
-				}
-				CityInlineKeyboard = tgbotapi.InlineKeyboardMarkup{}
-				SelectCity = true
-				var isCorrect bool
-				callbackQuerySelectCity := <-ChSelectCity
-				log.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!callbackQuerySelectCity id: %v\n", callbackQuerySelectCity.Message.Chat.ID)
-				for _, city := range cities {
-					log.Printf("city: %v", city)
-					if city == callbackQuerySelectCity.Data {
-						isCorrect = true
-						ID, err = b.db.AddChatIDFilters(ctx, int(message.Chat.ID))
-						if err != nil {
-							log.Printf("AddChatIDFilters error: %v", err)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
-							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-								log.Fatalf("delete wait message error: %v", err)
-							}
-							SelectCity = false
-							SelectRadius = false
-							SelectInlineKB = false
-							InputPrice = false
-							InputYear = false
-							InputMill = false
-							return
-						}
-
-						log.Printf("callbackQuery: %v\ncities: %v", callbackQuerySelectCity.Data, city)
-						if err := b.handlerCityInlineKeyboard(ctxt, callbackQuerySelectCity); err != nil {
-							log.Printf("handlerCityInlineKeyboard error: %v", err)
-							msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
-							b.bot.Send(msg)
-							continue
-						}
-						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySuccessfullySelectCity)
-
-						if _, err := b.bot.Send(msg); err != nil {
-							log.Printf("error send message: %v", err)
-							continue
-						}
-						if err := b.db.AddCityFilter(ctx, ID, city); err != nil {
-							log.Printf("AddCityFilter error: %v", err)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
-							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-								log.Fatalf("delete wait message error: %v", err)
-							}
-							SelectCity = false
-							SelectRadius = false
-							SelectInlineKB = false
-							InputPrice = false
-							InputYear = false
-							InputMill = false
-							return
-						}
-						SelectCity = false
-						SelectRadius = true
-						msg = tgbotapi.NewMessage(message.Chat.ID, replySelectRadius)
-						msg.ReplyMarkup = RadiusInlineKeyboard
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Printf("error send message: %v", err)
-							continue
-						}
-						log.Print("wait click inline keyboard")
-
-						callbackQuerySelectRadius := <-ChSelectRadius
-						if err := b.handlerRadiusInlineKeyboard(ctxt, callbackQuerySelectRadius); err != nil {
-							log.Printf("handlerRadiusInlineKeyboard error: %v", err)
-							msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
-							b.bot.Send(msg)
-							continue
-						}
-						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySuccessfullySelectRadius)
-
-						if _, err := b.bot.Send(msg); err != nil {
-							log.Printf("error send message: %v", err)
-							continue
-						}
-						if err := b.db.AddRadiusFilter(ctx, ID, callbackQuerySelectRadius.Data); err != nil {
-							log.Printf("AddRadiusFilter error: %v", err)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
-							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-								log.Fatalf("delete wait message error: %v", err)
-							}
-							SelectCity = false
-							SelectRadius = false
-							SelectInlineKB = false
-							InputPrice = false
-							InputYear = false
-							InputMill = false
-							return
-						}
-						SelectRadius = false
-						SelectInlineKB = true
-						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySelectCategoty)
-						msg.ReplyMarkup = CategoryInlineKeyboard1
-						sendmsg, err := b.bot.Send(msg)
-						if err != nil {
-							log.Printf("error send message: %v", err)
-							continue
-						}
-						SelectCategory = sendmsg
-						go func() {
-							for {
-								if Vehicles || Propertyrentals || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics {
-									<-ChInputPrice
-									msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Printf("error send message: %v", err)
-									}
-									InputPrice = true
-									return
-								} else if Free || Groups || All_listings {
-									return
-								}
-							}
-
-						}()
-
-						go func() {
-							for {
-								if Vehicles {
-									log.Print("wait ChInputYear")
-									<-ChInputYear
-									log.Print("get ChInputYear")
-									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Printf("error send message: %v", err)
-									}
-									InputYear = true
-									return
-								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-									return
-								}
-							}
-						}()
-						go func() {
-							for {
-								if Propertyrentals {
-									<-ChSquareMet
-									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Printf("error send message: %v", err)
-									}
-									InputMet = true
-									return
-								} else if Vehicles || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-									return
-								}
-							}
-
-						}()
-						go func() {
-							for {
-								if Vehicles {
-									if All || Cars_and_lorries {
-										log.Print("wait ChInputMill")
-										<-ChInputMill
-										log.Print("get ChInputMill")
-										msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
-										_, err = b.bot.Send(msg)
-										if err != nil {
-											log.Printf("error send message: %v", err)
-										}
-										InputMill = true
-										return
-									} else if Motorcycles || Powersports || Motorhomes_and_campers || Boats || Commercial_and_industrial || Trailers || Other {
-										return
-									}
-								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-									return
-								}
-							}
-						}()
-
-						url1 = <-ChUrl
-						slcCat := <-ChSelectCategory
-						log.Printf("slcCat: %v", slcCat)
-						if err := b.db.AddMonitoringFilter(ctx, ID, url1); err != nil {
-							log.Printf("AddMonitoringFilter error: %v", err)
-							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, добавьте фильтр еще раз")
-							msg.ReplyMarkup = StartKeyboard
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Fatalf("[handleMessage]error send message: %v", err)
-							}
-							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-								log.Fatalf("delete wait message error: %v", err)
-							}
-							SelectCity = false
-							SelectRadius = false
-							SelectInlineKB = false
-							InputPrice = false
-							InputYear = false
-							InputMill = false
-							return
-						}
-						SelectInlineKB = false
-						msg = tgbotapi.NewMessage(message.Chat.ID, "Успешно создан фильтр!")
-						msg.ReplyMarkup = StartKeyboard
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Printf("error send message: %v", err)
-						}
-					}
-				}
-				if !isCorrect {
-					msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replyError)
-					msg.ReplyMarkup = StartKeyboard
-					if _, err := b.bot.Send(msg); err != nil {
-						log.Printf("error send message: %v", err)
-						continue
-					}
-					return
-				}
-				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-					log.Printf("DeleteWaitMessage error: %v", err)
-					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					SelectCity = false
-					SelectRadius = false
-					SelectInlineKB = false
-					InputPrice = false
-					InputYear = false
-					InputMill = false
-					return
-				}
-				if err := b.db.AddFilterFile(ctx, ID, data.FileName); err != nil {
-					log.Printf("AddFilterFile error: %v", err)
-					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					SelectCity = false
-					SelectRadius = false
-					SelectInlineKB = false
-					InputPrice = false
-					InputYear = false
-					InputMill = false
-					return
-				}
-				if err := os.Rename(parser.Free_account+data.FileName, parser.Work_account+data.FileName); err != nil {
-					log.Printf("Rename error: %v", err)
-					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					SelectCity = false
-					SelectRadius = false
-					SelectInlineKB = false
-					InputPrice = false
-					InputYear = false
-					InputMill = false
-					return
-				}
-				go func() {
-					for id := range parser.ChId {
-						log.Print(id)
-						msg = tgbotapi.NewMessage(message.Chat.ID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(id))
-						_, err = b.bot.Send(msg)
-						if err != nil {
-							log.Printf("error send message: %v", err)
-						}
-					}
-				}()
-				err = b.parser.Monitoring(ctxt, url1, ID)
-				if err != nil {
-					log.Printf("Monitoring error: %v", err)
-					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка мониторинга, добавьте фильтр еще раз")
-					msg.ReplyMarkup = StartKeyboard
-					_, err = b.bot.Send(msg)
-					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
-					}
-					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
-						log.Fatalf("delete wait message error: %v", err)
-					}
-					SelectCity = false
-					SelectRadius = false
-					SelectInlineKB = false
-					InputPrice = false
-					InputYear = false
-					InputMill = false
-					return
-				}
-				break
-			}
-		}(message)
-	}
-	return nil
-}
+// func (b *Bot) handleMessage(ctx context.Context, message *tgbotapi.Message) error {
+// 	log.Printf("[%s] %s", message.From.UserName, message.Text)
+// 	waitMsg, err := b.db.WaitMessage(ctx, int(message.Chat.ID))
+// 	if err != nil {
+// 		return fmt.Errorf("get wait message error: %w", err)
+// 	}
+// 	if message.Text == "Добавить фильтр" && !waitMsg {
+// 		if err := b.db.AddWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 			return fmt.Errorf("add wait message error: %w", err)
+// 		}
+// 		msg := tgbotapi.NewMessage(message.Chat.ID, replySetCity)
+// 		msg.ReplyMarkup = CancelKeyboard
+// 		_, err := b.bot.Send(msg)
+// 		if err != nil {
+// 			return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 		}
+// 	} else if message.Text == "Мои фильтры" && !waitMsg {
+// 		Filters, err = b.db.SelectAllFilter(ctx, int(message.Chat.ID))
+// 		if err != nil {
+// 			log.Printf("SelectAllFilter error: %v", err)
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
+// 			msg.ReplyMarkup = StartKeyboard
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 				log.Fatalf("delete wait message error: %v", err)
+// 			}
+// 			SelectCity = false
+// 			SelectRadius = false
+// 			SelectInlineKB = false
+// 			InputPrice = false
+// 			InputYear = false
+// 			InputMill = false
+// 			return nil
+// 		}
+// 		if len(Filters) == 0 || Filters == nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Вы еще не добавляли фильтров!")
+// 			msg.ReplyMarkup = StartKeyboard
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			return nil
+// 		}
+// 		if len(Filters) == 1 {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", Filters[0].City, Filters[0].Radius, Filters[0].Category))
+// 			msg.ReplyMarkup = SelectFilters3
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			CurFilter = Filters[0]
+// 		} else {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, fmt.Sprintf("Город: %s\nРадиус: %s\nКатегория: %s", Filters[0].City, Filters[0].Radius, Filters[0].Category))
+// 			msg.ReplyMarkup = SelectFilters
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			CurFilter = Filters[0]
+// 		}
+// 		return nil
+// 	}
+// 	if message.Text == "Отмена" && waitMsg {
+// 		if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 			return fmt.Errorf("delete wait message error: %w", err)
+// 		}
+// 		msg := tgbotapi.NewMessage(message.Chat.ID, replyCancel)
+// 		msg.ReplyMarkup = StartKeyboard
+// 		_, err := b.bot.Send(msg)
+// 		if err != nil {
+// 			return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 		}
+// 		if err := b.db.DeleteFilter(ctx, ID); err != nil {
+// 			log.Printf("DeleteFilter error: %v", err)
+// 			msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова отменить добавление фильтра")
+// 			msg.ReplyMarkup = StartKeyboard
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			SelectCity = false
+// 			SelectRadius = false
+// 			SelectInlineKB = false
+// 			InputPrice = false
+// 			InputYear = false
+// 			InputMill = false
+// 			return nil
+// 		}
+// 		SelectCity = false
+// 		SelectRadius = false
+// 		SelectInlineKB = false
+// 		InputPrice = false
+// 		InputYear = false
+// 		InputMill = false
+// 		return nil
+// 	}
+// 	if InputPrice {
+// 		log.Print("InputPrice ")
+// 		var (
+// 			num1 string
+// 			num2 string
+// 		)
+// 		price := strings.TrimSpace(message.Text)
+// 		minMax := strings.Split(price, ",")
+// 		if len(minMax) > 2 {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 числа!")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		for ind, nums := range minMax {
+// 			num := strings.Split(nums, "")
+// 			log.Printf("num: %s", num)
+// 			for _, n := range num {
+// 				log.Printf("n: %s", n)
+// 				if n == " " {
+// 					continue
+// 				}
+// 				_, err := strconv.Atoi(n)
+// 				if err != nil {
+// 					log.Printf("Atoi err: %v", err)
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только числа без лишних символов!")
+// 					_, err := b.bot.Send(msg)
+// 					if err != nil {
+// 						return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 					}
+// 					return nil
+// 				}
+// 				if ind == 0 {
+// 					num1 += n
+// 				} else if ind == 1 {
+// 					num2 += n
+// 				}
+// 			}
+// 		}
+// 		n1, err := strconv.Atoi(num1)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, введите максимальную и минимальную цену еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		n2, err := strconv.Atoi(num2)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, введите максимальную и минимальную цену еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		if n1 > n2 {
+// 			go func() {
+// 				ChMinPrice <- num2
+// 				ChMaxPrice <- num1
+// 			}()
+// 		} else if n2 > n1 {
+// 			go func() {
+// 				ChMinPrice <- num1
+// 				ChMaxPrice <- num2
+// 			}()
+// 		} else if n1 == n2 {
+// 			go func() {
+// 				ChMinPrice <- num1
+// 				ChMaxPrice <- num2
+// 			}()
+// 		}
+// 		InputPrice = false
+// 		return nil
+// 	}
+// 	if InputMet {
+// 		log.Print("InputPrice ")
+// 		var (
+// 			num1 string
+// 			num2 string
+// 		)
+// 		price := strings.TrimSpace(message.Text)
+// 		minMax := strings.Split(price, ",")
+// 		if len(minMax) > 2 {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 числа!")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		for ind, nums := range minMax {
+// 			num := strings.Split(nums, "")
+// 			log.Printf("num: %s", num)
+// 			for _, n := range num {
+// 				log.Printf("n: %s", n)
+// 				if n == " " {
+// 					continue
+// 				}
+// 				_, err := strconv.Atoi(n)
+// 				if err != nil {
+// 					log.Printf("Atoi err: %v", err)
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только числа без лишних символов!")
+// 					_, err := b.bot.Send(msg)
+// 					if err != nil {
+// 						return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 					}
+// 					return nil
+// 				}
+// 				if ind == 0 {
+// 					num1 += n
+// 				} else if ind == 1 {
+// 					num2 += n
+// 				}
+// 			}
+// 		}
+// 		n1, err := strconv.Atoi(num1)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальные и минимальные квадратные метры еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		n2, err := strconv.Atoi(num2)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальные и минимальные квадратные метры еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		if n1 > n2 {
+// 			go func() {
+// 				ChMinMet <- num2
+// 				ChMaxMet <- num1
+// 			}()
+// 		} else if n2 > n1 {
+// 			go func() {
+// 				ChMinMet <- num1
+// 				ChMaxMet <- num2
+// 			}()
+// 		} else if n1 == n2 {
+// 			go func() {
+// 				ChMinMet <- num1
+// 				ChMaxMet <- num2
+// 			}()
+// 		}
+// 		InputMet = false
+// 		return nil
+// 	}
+// 	if InputYear {
+// 		var (
+// 			num1 string
+// 			num2 string
+// 		)
+// 		price := strings.TrimSpace(message.Text)
+// 		minMax := strings.Split(price, ",")
+// 		if len(minMax) > 2 {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 года!")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		for ind, nums := range minMax {
+// 			num := strings.Split(nums, "")
+// 			for _, n := range num {
+// 				if n == " " {
+// 					continue
+// 				}
+// 				_, err := strconv.Atoi(n)
+// 				if err != nil {
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только года без лишних символов!")
+// 					_, err := b.bot.Send(msg)
+// 					if err != nil {
+// 						return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 					}
+// 					return nil
+// 				}
+// 				if ind == 0 {
+// 					num1 += n
+// 				} else if ind == 1 {
+// 					num2 += n
+// 				}
+// 			}
+// 		}
+// 		n1, err := strconv.Atoi(num1)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный год еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		n2, err := strconv.Atoi(num2)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный год еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		if n1 > n2 {
+// 			go func() {
+// 				ChMinYear <- num2
+// 				ChMaxYear <- num1
+// 			}()
+// 		} else if n2 > n1 {
+// 			go func() {
+// 				ChMinYear <- num1
+// 				ChMaxYear <- num2
+// 			}()
+// 		} else if n1 == n2 {
+// 			go func() {
+// 				ChMinYear <- num1
+// 				ChMaxYear <- num2
+// 			}()
+// 		}
+// 		InputYear = false
+// 		return nil
+// 	}
+// 	if InputMill {
+// 		var (
+// 			num1 string
+// 			num2 string
+// 		)
+// 		price := strings.TrimSpace(message.Text)
+// 		minMax := strings.Split(price, ",")
+// 		if len(minMax) > 2 {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только 2 пробега!")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		for ind, nums := range minMax {
+// 			num := strings.Split(nums, "")
+// 			for _, n := range num {
+// 				if n == " " {
+// 					continue
+// 				}
+// 				_, err := strconv.Atoi(n)
+// 				if err != nil {
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Введи только пробег без лишних символов!")
+// 					_, err := b.bot.Send(msg)
+// 					if err != nil {
+// 						return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 					}
+// 					return nil
+// 				}
+// 				if ind == 0 {
+// 					num1 += n
+// 				} else if ind == 1 {
+// 					num2 += n
+// 				}
+// 			}
+// 		}
+// 		n1, err := strconv.Atoi(num1)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный пробег еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		n2, err := strconv.Atoi(num2)
+// 		if err != nil {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла непредвидимая ошибка, введите максимальный и минимальный пробег еще раз")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		if n1 > n2 {
+// 			go func() {
+// 				ChMinMill <- num2
+// 				ChMaxMill <- num1
+// 			}()
+// 		} else if n2 > n1 {
+// 			go func() {
+// 				ChMinMill <- num1
+// 				ChMaxMill <- num2
+// 			}()
+// 		} else if n1 == n2 {
+// 			go func() {
+// 				ChMinMill <- num1
+// 				ChMaxMill <- num2
+// 			}()
+// 		}
+// 		InputMill = false
+// 		return nil
+// 	}
+// 	if waitMsg {
+// 		if message.Text == "Добавить фильтр" || message.Text == "Мои фильтры" || message.Text == "Отмена" {
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Введи корректное название города!")
+// 			_, err := b.bot.Send(msg)
+// 			if err != nil {
+// 				return fmt.Errorf("[handleMessage]error send message: %w", err)
+// 			}
+// 			return nil
+// 		}
+// 		log.Print("get data")
+// 		datas, err := b.parser.GetData()
+// 		if err == parser.ErrEmptyData {
+// 			for _, id := range Admins {
+// 				if message.Chat.ID != id {
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+// 					msg.ReplyMarkup = StartKeyboard
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					return nil
+// 				} else if message.Chat.ID == id {
+// 					msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					return nil
+// 				}
+// 			}
+// 		}
+// 		if err != nil && err != parser.ErrEmptyData {
+// 			log.Fatalf("get data error: %v", err)
+// 		}
+// 		go func(message *tgbotapi.Message) {
+// 			log.Print("!!!goruntine!!!")
+// 			msg := tgbotapi.NewMessage(message.Chat.ID, "Идет установка города в facebook...")
+// 			_, err = b.bot.Send(msg)
+// 			if err != nil {
+// 				log.Fatalf("[handleMessage]error send message: %v", err)
+// 			}
+// 			log.Printf("!!!!!data: %v", datas)
+// 			for _, data := range datas {
+// 				b.rw.Lock()
+// 				proxy := fmt.Sprintf("http://%s", data.Datas.IpPortPX)
+// 				log.Printf("proxy: %s", proxy)
+// 				opts := append(chromedp.DefaultExecAllocatorOptions[:],
+// 					chromedp.ProxyServer(proxy),
+// 					chromedp.WindowSize(1900, 1080), // init with a desktop view
+// 					chromedp.Flag("enable-automation", false),
+// 					// chromedp.Flag("headless", false),
+// 				)
+// 				log.Printf("ip port proxy: %v", data.Datas.IpPortPX)
+// 				b.rw.Unlock()
+// 				ctxChr, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+// 				defer cancel()
+// 				ctxt, cancel := chromedp.NewContext(ctxChr) // chromedp.WithDebugf(log.Printf),
+// 				defer cancel()
+// 				defer chromedp.Cancel(ctxt)
+// 				log.Print("!!!settings!!!")
+// 				b.rw.Lock()
+// 				err = b.parser.Settings(ctxt, data)
+// 				switch err {
+// 				case parser.ErrProxyConnectionFailed:
+// 					for _, id := range Admins {
+// 						if message.Chat.ID != id {
+// 							msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+// 							msg.ReplyMarkup = StartKeyboard
+// 							_, err = b.bot.Send(msg)
+// 							if err != nil {
+// 								log.Fatalf("[handleMessage]error send message: %v", err)
+// 							}
+// 						} else if message.Chat.ID == id {
+// 							dataFile, err := os.ReadDir(parser.Free_account)
+// 							if err != nil {
+// 								log.Printf("ReadDir error: %v", err)
+// 								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+// 								msg.ReplyMarkup = StartKeyboard
+// 								_, err = b.bot.Send(msg)
+// 								if err != nil {
+// 									log.Fatalf("[handleMessage]error send message: %v", err)
+// 								}
+// 							}
+// 							if len(dataFile) == 0 {
+// 								for _, id := range Admins {
+// 									if message.Chat.ID != id {
+// 										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+// 										_, err = b.bot.Send(msg)
+// 										if err != nil {
+// 											log.Fatalf("[handleMessage]error send message: %v", err)
+// 										}
+// 									} else if message.Chat.ID == id {
+// 										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+// 										_, err = b.bot.Send(msg)
+// 										if err != nil {
+// 											log.Fatalf("[handleMessage]error send message: %v", err)
+// 										}
+// 									}
+// 								}
+// 							}
+// 							for _, file := range dataFile {
+// 								if file.Name() == data.FileName {
+// 									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
+// 										log.Printf("remove error: %v", err)
+// 										for _, id := range Admins {
+// 											if message.Chat.ID != id {
+// 												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+// 												_, err = b.bot.Send(msg)
+// 												if err != nil {
+// 													log.Fatalf("[handleMessage]error send message: %v", err)
+// 												}
+// 											} else if message.Chat.ID == id {
+// 												msg := tgbotapi.NewMessage(id, "Ошибка при удалении аккаунта с не валидными прокси")
+// 												_, err = b.bot.Send(msg)
+// 												if err != nil {
+// 													log.Fatalf("[handleMessage]error send message: %v", err)
+// 												}
+// 											}
+// 										}
+// 									}
+// 									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: не валидные прокси в файле: "+data.FileName)
+// 									_, err = b.bot.Send(msg)
+// 									if err != nil {
+// 										log.Fatalf("[handleMessage]error send message: %v", err)
+// 									}
+// 								}
+// 							}
+// 						}
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					b.rw.Unlock()
+// 					continue
+// 				case parser.ErrAccountBanned:
+// 					for _, id := range Admins {
+// 						if message.Chat.ID == id {
+// 							dataFile, err := os.ReadDir(parser.Free_account)
+// 							if err != nil {
+// 								log.Printf("ReadDir error: %v", err)
+// 								msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте позже")
+// 								msg.ReplyMarkup = StartKeyboard
+// 								_, err = b.bot.Send(msg)
+// 								if err != nil {
+// 									log.Fatalf("[handleMessage]error send message: %v", err)
+// 								}
+// 							}
+// 							if len(dataFile) == 0 {
+// 								for _, id := range Admins {
+// 									if message.Chat.ID != id {
+// 										msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+// 										_, err = b.bot.Send(msg)
+// 										if err != nil {
+// 											log.Fatalf("[handleMessage]error send message: %v", err)
+// 										}
+// 									} else if message.Chat.ID == id {
+// 										msg := tgbotapi.NewMessage(id, "Не хватает аккаунтов, добавьте txt файл через команду /load")
+// 										_, err = b.bot.Send(msg)
+// 										if err != nil {
+// 											log.Fatalf("[handleMessage]error send message: %v", err)
+// 										}
+// 									}
+// 								}
+// 							}
+// 							for _, file := range dataFile {
+// 								if file.Name() == data.FileName {
+// 									if err := os.Remove(parser.Free_account + data.FileName); err != nil {
+// 										log.Printf("remove error: %v", err)
+// 										for _, id := range Admins {
+// 											if message.Chat.ID != id {
+// 												msg := tgbotapi.NewMessage(message.Chat.ID, "Технические неполадки, попробуйте снова")
+// 												_, err = b.bot.Send(msg)
+// 												if err != nil {
+// 													log.Fatalf("[handleMessage]error send message: %v", err)
+// 												}
+// 											} else if message.Chat.ID == id {
+// 												msg := tgbotapi.NewMessage(id, "Ошибка при удалении забаненного аккаунта")
+// 												_, err = b.bot.Send(msg)
+// 												if err != nil {
+// 													log.Fatalf("[handleMessage]error send message: %v", err)
+// 												}
+// 											}
+// 										}
+// 									}
+// 									msg := tgbotapi.NewMessage(id, "Профиль был автоматически удален, причина: аккаунт забаннен, файл: "+data.FileName)
+// 									_, err = b.bot.Send(msg)
+// 									if err != nil {
+// 										log.Fatalf("[handleMessage]error send message: %v", err)
+// 									}
+// 								}
+// 							}
+// 						}
+// 					}
+// 					b.rw.Unlock()
+// 					continue
+// 				}
+// 				if err != nil && err != parser.ErrEmptyData && err != parser.ErrAccountBanned {
+// 					log.Printf("settings error: %v", err)
+// 					b.rw.Unlock()
+// 					continue
+// 				}
+// 				b.rw.Unlock()
+// 				log.Print("!!!end settings!!!")
+// 				log.Printf("city: %s", message.Text)
+// 				cities, err := b.parser.SelectCity(ctxt, message.Text)
+// 				if err != nil {
+// 					log.Printf("select city error: %v", err)
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
+// 					b.bot.Send(msg)
+// 					continue
+// 				}
+// 				if len(cities) == 0 {
+// 					msg := tgbotapi.NewMessage(message.Chat.ID, "Было введено не корректное название города!")
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Printf("[handleMessage]error send message: %v", err)
+// 					}
+// 					return
+// 				}
+// 				for _, city := range cities {
+// 					CityInlineKeyboard.InlineKeyboard = append(CityInlineKeyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(
+// 						tgbotapi.NewInlineKeyboardButtonData(city, city),
+// 					))
+// 				}
+// 				msg = tgbotapi.NewMessage(message.Chat.ID, replySelectCity)
+// 				msg.ReplyMarkup = CityInlineKeyboard
+// 				_, err = b.bot.Send(msg)
+// 				if err != nil {
+// 					log.Printf("[handleMessage]error send message: %v", err)
+// 					continue
+// 				}
+// 				CityInlineKeyboard = tgbotapi.InlineKeyboardMarkup{}
+// 				SelectCity = true
+// 				var isCorrect bool
+// 				callbackQuerySelectCity := <-ChSelectCity
+// 				log.Printf("!!!!!!!!!!!!!!!!!!!!!!!!!callbackQuerySelectCity id: %v\n", callbackQuerySelectCity.Message.Chat.ID)
+// 				for _, city := range cities {
+// 					log.Printf("city: %v", city)
+// 					if city == callbackQuerySelectCity.Data {
+// 						isCorrect = true
+// 						ID, err = b.db.AddChatIDFilters(ctx, int(message.Chat.ID))
+// 						if err != nil {
+// 							log.Printf("AddChatIDFilters error: %v", err)
+// 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 							msg.ReplyMarkup = StartKeyboard
+// 							_, err = b.bot.Send(msg)
+// 							if err != nil {
+// 								log.Fatalf("[handleMessage]error send message: %v", err)
+// 							}
+// 							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 								log.Fatalf("delete wait message error: %v", err)
+// 							}
+// 							SelectCity = false
+// 							SelectRadius = false
+// 							SelectInlineKB = false
+// 							InputPrice = false
+// 							InputYear = false
+// 							InputMill = false
+// 							return
+// 						}
+// 						log.Printf("callbackQuery: %v\ncities: %v", callbackQuerySelectCity.Data, city)
+// 						if err := b.handlerCityInlineKeyboard(ctxt, callbackQuerySelectCity); err != nil {
+// 							log.Printf("handlerCityInlineKeyboard error: %v", err)
+// 							msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
+// 							b.bot.Send(msg)
+// 							continue
+// 						}
+// 						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySuccessfullySelectCity)
+// 						if _, err := b.bot.Send(msg); err != nil {
+// 							log.Printf("error send message: %v", err)
+// 							continue
+// 						}
+// 						if err := b.db.AddCityFilter(ctx, ID, city); err != nil {
+// 							log.Printf("AddCityFilter error: %v", err)
+// 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 							msg.ReplyMarkup = StartKeyboard
+// 							_, err = b.bot.Send(msg)
+// 							if err != nil {
+// 								log.Fatalf("[handleMessage]error send message: %v", err)
+// 							}
+// 							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 								log.Fatalf("delete wait message error: %v", err)
+// 							}
+// 							SelectCity = false
+// 							SelectRadius = false
+// 							SelectInlineKB = false
+// 							InputPrice = false
+// 							InputYear = false
+// 							InputMill = false
+// 							return
+// 						}
+// 						SelectCity = false
+// 						SelectRadius = true
+// 						msg = tgbotapi.NewMessage(message.Chat.ID, replySelectRadius)
+// 						msg.ReplyMarkup = RadiusInlineKeyboard
+// 						_, err = b.bot.Send(msg)
+// 						if err != nil {
+// 							log.Printf("error send message: %v", err)
+// 							continue
+// 						}
+// 						log.Print("wait click inline keyboard")
+// 						callbackQuerySelectRadius := <-ChSelectRadius
+// 						if err := b.handlerRadiusInlineKeyboard(ctxt, callbackQuerySelectRadius); err != nil {
+// 							log.Printf("handlerRadiusInlineKeyboard error: %v", err)
+// 							msg := tgbotapi.NewMessage(message.Chat.ID, replyErr)
+// 							b.bot.Send(msg)
+// 							continue
+// 						}
+// 						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySuccessfullySelectRadius)
+// 						if _, err := b.bot.Send(msg); err != nil {
+// 							log.Printf("error send message: %v", err)
+// 							continue
+// 						}
+// 						if err := b.db.AddRadiusFilter(ctx, ID, callbackQuerySelectRadius.Data); err != nil {
+// 							log.Printf("AddRadiusFilter error: %v", err)
+// 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 							msg.ReplyMarkup = StartKeyboard
+// 							_, err = b.bot.Send(msg)
+// 							if err != nil {
+// 								log.Fatalf("[handleMessage]error send message: %v", err)
+// 							}
+// 							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 								log.Fatalf("delete wait message error: %v", err)
+// 							}
+// 							SelectCity = false
+// 							SelectRadius = false
+// 							SelectInlineKB = false
+// 							InputPrice = false
+// 							InputYear = false
+// 							InputMill = false
+// 							return
+// 						}
+// 						SelectRadius = false
+// 						SelectInlineKB = true
+// 						msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replySelectCategoty)
+// 						msg.ReplyMarkup = CategoryInlineKeyboard1
+// 						sendmsg, err := b.bot.Send(msg)
+// 						if err != nil {
+// 							log.Printf("error send message: %v", err)
+// 							continue
+// 						}
+// 						SelectCategory = sendmsg
+// 						go func() {
+// 							for {
+// 								if Vehicles || Propertyrentals || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics {
+// 									<-ChInputPrice
+// 									msg := tgbotapi.NewMessage(message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
+// 									_, err = b.bot.Send(msg)
+// 									if err != nil {
+// 										log.Printf("error send message: %v", err)
+// 									}
+// 									InputPrice = true
+// 									return
+// 								} else if Free || Groups || All_listings {
+// 									return
+// 								}
+// 							}
+// 						}()
+// 						go func() {
+// 							for {
+// 								if Vehicles {
+// 									log.Print("wait ChInputYear")
+// 									<-ChInputYear
+// 									log.Print("get ChInputYear")
+// 									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
+// 									_, err = b.bot.Send(msg)
+// 									if err != nil {
+// 										log.Printf("error send message: %v", err)
+// 									}
+// 									InputYear = true
+// 									return
+// 								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+// 									return
+// 								}
+// 							}
+// 						}()
+// 						go func() {
+// 							for {
+// 								if Propertyrentals {
+// 									<-ChSquareMet
+// 									msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
+// 									_, err = b.bot.Send(msg)
+// 									if err != nil {
+// 										log.Printf("error send message: %v", err)
+// 									}
+// 									InputMet = true
+// 									return
+// 								} else if Vehicles || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+// 									return
+// 								}
+// 							}
+// 						}()
+// 						go func() {
+// 							for {
+// 								if Vehicles {
+// 									if All || Cars_and_lorries {
+// 										log.Print("wait ChInputMill")
+// 										<-ChInputMill
+// 										log.Print("get ChInputMill")
+// 										msg = tgbotapi.NewMessage(message.Chat.ID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
+// 										_, err = b.bot.Send(msg)
+// 										if err != nil {
+// 											log.Printf("error send message: %v", err)
+// 										}
+// 										InputMill = true
+// 										return
+// 									} else if Motorcycles || Powersports || Motorhomes_and_campers || Boats || Commercial_and_industrial || Trailers || Other {
+// 										return
+// 									}
+// 								} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
+// 									return
+// 								}
+// 							}
+// 						}()
+// 						url1 = <-ChUrl
+// 						slcCat := <-ChSelectCategory
+// 						log.Printf("slcCat: %v", slcCat)
+// 						if err := b.db.AddMonitoringFilter(ctx, ID, url1); err != nil {
+// 							log.Printf("AddMonitoringFilter error: %v", err)
+// 							msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, добавьте фильтр еще раз")
+// 							msg.ReplyMarkup = StartKeyboard
+// 							_, err = b.bot.Send(msg)
+// 							if err != nil {
+// 								log.Fatalf("[handleMessage]error send message: %v", err)
+// 							}
+// 							if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 								log.Fatalf("delete wait message error: %v", err)
+// 							}
+// 							SelectCity = false
+// 							SelectRadius = false
+// 							SelectInlineKB = false
+// 							InputPrice = false
+// 							InputYear = false
+// 							InputMill = false
+// 							return
+// 						}
+// 						SelectInlineKB = false
+// 						msg = tgbotapi.NewMessage(message.Chat.ID, "Успешно создан фильтр!")
+// 						msg.ReplyMarkup = StartKeyboard
+// 						_, err = b.bot.Send(msg)
+// 						if err != nil {
+// 							log.Printf("error send message: %v", err)
+// 						}
+// 					}
+// 				}
+// 				if !isCorrect {
+// 					msg = tgbotapi.NewMessage(callbackQuerySelectCity.Message.Chat.ID, replyError)
+// 					msg.ReplyMarkup = StartKeyboard
+// 					if _, err := b.bot.Send(msg); err != nil {
+// 						log.Printf("error send message: %v", err)
+// 						continue
+// 					}
+// 					return
+// 				}
+// 				if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 					log.Printf("DeleteWaitMessage error: %v", err)
+// 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 					msg.ReplyMarkup = StartKeyboard
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					SelectCity = false
+// 					SelectRadius = false
+// 					SelectInlineKB = false
+// 					InputPrice = false
+// 					InputYear = false
+// 					InputMill = false
+// 					return
+// 				}
+// 				if err := b.db.AddFilterFile(ctx, ID, data.FileName); err != nil {
+// 					log.Printf("AddFilterFile error: %v", err)
+// 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 					msg.ReplyMarkup = StartKeyboard
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					SelectCity = false
+// 					SelectRadius = false
+// 					SelectInlineKB = false
+// 					InputPrice = false
+// 					InputYear = false
+// 					InputMill = false
+// 					return
+// 				}
+// 				if err := os.Rename(parser.Free_account+data.FileName, parser.Work_account+data.FileName); err != nil {
+// 					log.Printf("Rename error: %v", err)
+// 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+// 					msg.ReplyMarkup = StartKeyboard
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					SelectCity = false
+// 					SelectRadius = false
+// 					SelectInlineKB = false
+// 					InputPrice = false
+// 					InputYear = false
+// 					InputMill = false
+// 					return
+// 				}
+// 				go func() {
+// 					for id := range parser.ChId {
+// 						log.Print(id)
+// 						msg = tgbotapi.NewMessage(message.Chat.ID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(id))
+// 						_, err = b.bot.Send(msg)
+// 						if err != nil {
+// 							log.Printf("error send message: %v", err)
+// 						}
+// 					}
+// 				}()
+// 				err = b.parser.Monitoring(ctxt, url1, ID)
+// 				if err != nil {
+// 					log.Printf("Monitoring error: %v", err)
+// 					msg = tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка мониторинга, добавьте фильтр еще раз")
+// 					msg.ReplyMarkup = StartKeyboard
+// 					_, err = b.bot.Send(msg)
+// 					if err != nil {
+// 						log.Fatalf("[handleMessage]error send message: %v", err)
+// 					}
+// 					if err := b.db.DeleteWaitMessage(ctx, int(message.Chat.ID)); err != nil {
+// 						log.Fatalf("delete wait message error: %v", err)
+// 					}
+// 					SelectCity = false
+// 					SelectRadius = false
+// 					SelectInlineKB = false
+// 					InputPrice = false
+// 					InputYear = false
+// 					InputMill = false
+// 					return
+// 				}
+// 				break
+// 			}
+// 		}(message)
+// 	}
+// 	return nil
+// }

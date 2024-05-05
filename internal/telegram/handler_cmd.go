@@ -1,10 +1,7 @@
 package telegram
 
 import (
-	"context"
-	database "facebook_marketplace_bot/internal/database/migration"
 	"fmt"
-	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -36,10 +33,10 @@ var (
 	replyLoad = fmt.Sprintf("Пришлите фалй с расширением .txt. Данные в файлике должны быть в таком формате:\nloginfb:passwordfb\nipProxy:portProxy@loginProxy:passwordProxy\n[{%q: %q}, {%q: %q}]", "nameCookie1", "valueCookie1", "nameCookie2", "valueCookie2")
 )
 
-func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) error {
+func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 	switch message.Command() {
 	case cmdStart:
-		return b.handleStartCommand(ctx, message)
+		return b.handleStartCommand(message)
 	case cmdHelp:
 		return b.handleHelpCommand(message)
 	case cmdLoad:
@@ -49,17 +46,10 @@ func (b *Bot) handleCommand(ctx context.Context, message *tgbotapi.Message) erro
 	}
 
 }
-func (b *Bot) handleStartCommand(ctx context.Context, message *tgbotapi.Message) error {
-	err := b.db.AddChatID(ctx, int(message.Chat.ID))
-	if err == database.ErrDublicateKey {
-		log.Print("ErrDublicateKey")
-	}
-	if err != nil && err != database.ErrDublicateKey {
-		return fmt.Errorf("add chat id error: %w", err)
-	}
+func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	msg := tgbotapi.NewMessage(message.Chat.ID, replyStart)
 	msg.ReplyMarkup = StartKeyboard
-	_, err = b.bot.Send(msg)
+	_, err := b.bot.Send(msg)
 	if err != nil {
 		return fmt.Errorf("[handleStartCommand]error send message: %w", err)
 	}

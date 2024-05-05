@@ -94,18 +94,9 @@ func (p *StrParser) checkAndSetCookie(ctx context.Context, data Datas) error {
 		if err := p.LoginFBaccountToLogPass(ctx, data.Datas); err != nil {
 			return fmt.Errorf("login to username and password error: %w", err)
 		}
-		var buf []byte
-		if err := chromedp.Run(ctx,
-			chromedp.FullScreenshot(&buf, 90),
-		); err != nil {
-			return fmt.Errorf("click log in error: %v", err)
-		}
-		if err := os.WriteFile("test.png", buf, 00644); err != nil {
-			return fmt.Errorf("WriteFile err: %w", err)
-		}
 		if err := chromedp.Run(ctx,
 			chromedp.Sleep(5*time.Second),
-			chromedp.Evaluate(fmt.Sprintf("document.querySelector(`h4[id=%q]`).textContent;", ":R1alalqlaiktl9aqqd9emhpapd5aq:"), &res),
+			chromedp.Evaluate(fmt.Sprintf("document.querySelector(`h4[id=%q]`).textContent;", ":R5alanalaajml5bb9l5qq9papd5aq:"), &res),
 		); err != nil {
 			log.Printf("evaluate error: %v", err)
 			log.Printf("%s account banned", data.FileName)

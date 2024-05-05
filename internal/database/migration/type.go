@@ -3,10 +3,10 @@ package database
 import "context"
 
 type Database interface {
-	AddChatID(ctx context.Context, chat_id int) error
-	AddWaitMessage(ctx context.Context, chat_id int) error
-	DeleteWaitMessage(ctx context.Context, chat_id int) error
-	WaitMessage(ctx context.Context, chat_id int) (bool, error)
+	// AddChatID(ctx context.Context, chat_id int) error
+	// AddWaitMessage(ctx context.Context, chat_id int) error
+	// DeleteWaitMessage(ctx context.Context, chat_id int) error
+	// WaitMessage(ctx context.Context, chat_id int) (bool, error)
 	AddChatIDFilters(ctx context.Context, chat_id int) (int, error)
 	AddMonitoringFilter(ctx context.Context, id int, url string) error
 	MonitoringByIDFilter(ctx context.Context, id int) (string, error)
