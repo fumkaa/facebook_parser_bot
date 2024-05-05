@@ -117,6 +117,16 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url str
 		}
 		return
 	}
+
+	if err := b.FSM.Event(ctx, state_base); err != nil {
+		msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+		msg.ReplyMarkup = StartKeyboard
+		_, err = b.bot.Send(msg)
+		if err != nil {
+			log.Fatalf("[handleMessage]error send message: %v", err)
+		}
+		return
+	}
 	msg := tgbotapi.NewMessage(ChatID, "Успешно создан фильтр!")
 	msg.ReplyMarkup = StartKeyboard
 	_, err := b.bot.Send(msg)
