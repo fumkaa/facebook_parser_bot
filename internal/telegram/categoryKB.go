@@ -374,6 +374,7 @@ var CategoryInlineKeyboard4garden = tgbotapi.NewInlineKeyboardMarkup(
 )
 var CategoryInlineKeyboard4hobbies = tgbotapi.NewInlineKeyboardMarkup(
 	tgbotapi.NewInlineKeyboardRow(
+
 		tgbotapi.NewInlineKeyboardButtonData("garden", "garden"),
 		tgbotapi.NewInlineKeyboardButtonData("hobbies✅", "hobbies1"),
 	),

@@ -87,7 +87,8 @@ func (b *Bot) handlerRadiusInlineKeyboard(ctx context.Context, query *tgbotapi.C
 }
 
 var (
-	url                  = baseUrl
+	url = baseUrl
+
 	ChTypeVehicles       = make(chan *tgbotapi.CallbackQuery)
 	ChExteriorColour     = make(chan *tgbotapi.CallbackQuery)
 	ChInteriorColour     = make(chan *tgbotapi.CallbackQuery)

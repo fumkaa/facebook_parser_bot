@@ -26,6 +26,7 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 		if message.Text == "Отмена" {
 			if err := b.db.DeleteFilter(ctx, ID); err != nil {
 				log.Printf("DeleteFilter error: %v", err)
+
 				msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова отменить добавление фильтра")
 				msg.ReplyMarkup = StartKeyboard
 				_, err = b.bot.Send(msg)

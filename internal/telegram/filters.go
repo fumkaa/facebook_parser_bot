@@ -110,6 +110,7 @@ func (b *Bot) handleTypeProperty(query *tgbotapi.CallbackQuery, url *string) {
 	case "type_property_room_only":
 		*url += "&propertyType=private_room-shared_room"
 		go func() {
+
 			ChTypeProperty <- query
 		}()
 	case "type_property_townhouse":

@@ -10,6 +10,7 @@ import (
 func (b *Bot) handleMake(message tgbotapi.Message) error {
 	for {
 		if MakeNext {
+
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(message.Chat.ID, message.MessageID, MakeInlineKeyboard1)
 			_, err := b.bot.Send(editInlineKB)
 			if err != nil {

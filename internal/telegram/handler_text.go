@@ -17,6 +17,7 @@ var (
 	Filters   []database.Filter
 	// SelectCity       bool
 	// SelectRadius     bool
+
 	// SelectInlineKB   bool
 	// InputPrice       bool
 	// InputYear        bool

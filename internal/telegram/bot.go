@@ -89,6 +89,7 @@ func (b *Bot) initUpdatesChan() tgbotapi.UpdatesChannel {
 
 func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel) error {
 	for update := range updates {
+
 		log.Printf("current state: %s", b.FSM.Current())
 		if update.Message != nil {
 			if update.Message.IsCommand() {

@@ -11,6 +11,7 @@ func (b *Bot) handleCategory(query *tgbotapi.CallbackQuery) error {
 	switch query.Data {
 	case "next1":
 		switch {
+
 		case Home_improvements:
 			editInlineKB := tgbotapi.NewEditMessageReplyMarkup(query.Message.Chat.ID, query.Message.MessageID, CategoryInlineKeyboard2home_improvements)
 			_, err := b.bot.Send(editInlineKB)

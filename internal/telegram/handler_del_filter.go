@@ -25,6 +25,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		if err != nil {
 			log.Fatal("err")
 		}
+
 		if err := b.db.DeleteFilter(ctx, id); err != nil {
 			log.Printf("SelectAllFilter error: %v", err)
 			msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
