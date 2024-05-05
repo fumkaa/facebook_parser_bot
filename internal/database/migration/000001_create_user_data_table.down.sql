@@ -1,1 +1,1 @@
-DROP TABLE data_filters;
+DROP TABLE data_user;
