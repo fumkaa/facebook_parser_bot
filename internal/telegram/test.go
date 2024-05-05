@@ -425,7 +425,7 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 										}
 									}
 								}
-								for _, id := range Admins{
+								for _, id := range Admins {
 									if message.Chat.ID != id {
 										if err := b.FSM.Event(ctx, state_base); err != nil {
 											msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
@@ -583,6 +583,14 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 				ChMaxPrice <- num2
 			}()
 		}
+		if err := b.FSM.Event(ctx, state_select_category); err != nil {
+			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
+		}
 	case state_input_year:
 		var (
 			num1 string
@@ -653,6 +661,14 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 				ChMinYear <- num1
 				ChMaxYear <- num2
 			}()
+		}
+		if err := b.FSM.Event(ctx, state_select_category); err != nil {
+			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
 		}
 	case state_input_square_meters:
 		log.Print("input_square_meters ")
@@ -730,6 +746,14 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 				ChMaxMet <- num2
 			}()
 		}
+		if err := b.FSM.Event(ctx, state_select_category); err != nil {
+			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
+		}
 	case state_input_mill:
 		var (
 			num1 string
@@ -800,6 +824,14 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 				ChMinMill <- num1
 				ChMaxMill <- num2
 			}()
+		}
+		if err := b.FSM.Event(ctx, state_select_category); err != nil {
+			msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
 		}
 	}
 	return nil
