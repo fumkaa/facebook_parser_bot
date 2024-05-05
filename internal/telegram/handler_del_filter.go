@@ -34,6 +34,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 				log.Fatalf("[handleMessage]error send message: %v", err)
 			}
 			return
+
 		}
 		if err := os.Rename(parser.Work_account+cur_filter.Filter_file, parser.Free_account+cur_filter.Filter_file); err != nil {
 			log.Printf("Rename error: %v", err)

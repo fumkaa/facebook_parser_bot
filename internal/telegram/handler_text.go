@@ -20,6 +20,7 @@ var (
 	// SelectInlineKB   bool
 	// InputPrice       bool
 	// InputYear        bool
+
 	// InputMet         bool
 	// InputMill        bool
 	SelectCategory   tgbotapi.Message
