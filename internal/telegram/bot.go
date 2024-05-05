@@ -46,7 +46,7 @@ func NewBot(bot *tgbotapi.BotAPI, db database.Database, parser parser.Parser) Bo
 			"run",
 			fsm.Events{
 				// add filter
-				{Name: state_base, Src: []string{"run", state_set_city}, Dst: state_base},
+				{Name: state_base, Src: []string{"run", state_input_square_meters, state_input_year, state_input_mill, state_set_city, state_set_radius, state_select_category, state_input_price}, Dst: state_base},
 				{Name: state_cancel, Src: []string{state_input_price,
 					state_input_square_meters, state_input_year, state_input_mill, state_set_city, state_set_radius, state_select_category},
 					Dst: state_base},
@@ -201,114 +201,6 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 					continue
 				}
 				SelectCategory = sendmsg
-				go func() {
-					for {
-						if Vehicles || Propertyrentals || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics {
-							<-ChInputPrice
-							msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Введите минимальную и максимальную цену (в валюте, которая в том городе, который вы выбрали ранее, например если этот город в США, то валюта будет доллары) через запятую:\n111, 99999\nНеважно в каком порядке, большее число будет считаться как максимальное")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
-							}
-							if err := b.FSM.Event(ctx, state_input_price); err != nil {
-								msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-								return
-							}
-							return
-						} else if Free || Groups || All_listings {
-							return
-						}
-					}
-
-				}()
-
-				go func() {
-					for {
-						if Vehicles {
-							log.Print("wait ChInputYear")
-							<-ChInputYear
-							log.Print("get ChInputYear")
-							msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Введите минимальный и максимальный год через запятую:\n2020, 2024\nНеважно в каком порядке, больший год будет считаться как максимальный")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
-							}
-							if err := b.FSM.Event(ctx, state_input_year); err != nil {
-								msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-								return
-							}
-							return
-						} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-							return
-						}
-					}
-				}()
-				go func() {
-					for {
-						if Propertyrentals {
-							<-ChSquareMet
-							msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Введите минимальные и максимальные квадратные метры через запятую:\n100, 3000\nНеважно в каком порядке, большее число будет считаться как максимальный")
-							_, err = b.bot.Send(msg)
-							if err != nil {
-								log.Printf("error send message: %v", err)
-							}
-							if err := b.FSM.Event(ctx, state_input_square_meters); err != nil {
-								msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-								msg.ReplyMarkup = StartKeyboard
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Fatalf("[handleMessage]error send message: %v", err)
-								}
-								return
-							}
-							return
-						} else if Vehicles || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-							return
-						}
-					}
-
-				}()
-				go func(ChatID int64) {
-					for {
-						if Vehicles {
-							if All || Cars_and_lorries {
-								log.Print("wait ChInputMill")
-								<-ChInputMill
-								log.Print("get ChInputMill")
-								msg = tgbotapi.NewMessage(ChatID, "Введите минимальный и максимальный пробег (в той метрической системе, которая в выбранном вами городе, например если город в США, то тогда пробег измеряется в милях) через запятую:\n100, 5000\nНеважно в каком порядке, больший пробег будет считаться как максимальный")
-								_, err = b.bot.Send(msg)
-								if err != nil {
-									log.Printf("error send message: %v", err)
-								}
-								if err := b.FSM.Event(ctx, state_input_mill); err != nil {
-									msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-									msg.ReplyMarkup = StartKeyboard
-									_, err = b.bot.Send(msg)
-									if err != nil {
-										log.Fatalf("[handleMessage]error send message: %v", err)
-									}
-									return
-								}
-								return
-							} else if Motorcycles || Powersports || Motorhomes_and_campers || Boats || Commercial_and_industrial || Trailers || Other {
-								return
-							}
-						} else if Propertyrentals || Free || Toys || Instruments || Home_improvements || Classifieds || Apparel || Propertyforsale || Entertainment || Family || Sports || Home || Pets || Office_supplies || Garden || Hobbies || Electronics || Groups || All_listings {
-							return
-						}
-					}
-				}(update.CallbackQuery.Message.Chat.ID)
-
 			case state_select_category:
 				log.Print("update.CallbackQuery SelectInlineKB")
 				if err := b.handlerCategoryInlineKeyboard(ctx, update.CallbackQuery); err != nil {
