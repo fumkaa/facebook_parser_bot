@@ -87,7 +87,7 @@ func (p *StrParser) checkAndSetCookie(ctx context.Context, data Datas) error {
 	log.Print("setCookies Navigate")
 	if err := chromedp.Run(ctx,
 		chromedp.Sleep(5*time.Second),
-		chromedp.Evaluate(fmt.Sprintf("document.querySelector(`h4[id=%q]`).textContent;", ":R1alalqlaiktl9aqqd9emhpapd5aq:"), &res),
+		chromedp.Evaluate("document.querySelector(`h4`).textContent;", &res),
 	); err != nil {
 		log.Printf("evaluate error: %v", err)
 		log.Printf("%s invalid cookies", data.FileName)

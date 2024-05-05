@@ -72,7 +72,9 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 			}
 			return nil
 		} else if message.Text == "Мои фильтры" {
-			Filters, err := b.db.SelectAllFilter(ctx, int(message.Chat.ID))
+			var err error
+			Filters, err = b.db.SelectAllFilter(ctx, int(message.Chat.ID))
+			log.Printf("filters state base: %v", Filters)
 			if err != nil {
 				log.Printf("SelectAllFilter error: %v", err)
 				msg := tgbotapi.NewMessage(message.Chat.ID, "Произошла ошибка, попробуйте снова")

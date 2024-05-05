@@ -106,8 +106,8 @@ var (
 	MakePrevious         bool
 )
 
-func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url string) {
-	if err := b.db.AddMonitoringFilter(ctx, ID, url); err != nil {
+func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 string) {
+	if err := b.db.AddMonitoringFilter(ctx, ID, url1); err != nil {
 		log.Printf("AddMonitoringFilter error: %v", err)
 		msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, добавьте фильтр еще раз")
 		msg.ReplyMarkup = StartKeyboard
@@ -186,7 +186,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url str
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)
-	err = b.parser.Monitoring(Ctxt, url, ID)
+	err = b.parser.Monitoring(Ctxt, url1, ID)
 	if err != nil {
 		log.Printf("Monitoring error: %v", err)
 		msg = tgbotapi.NewMessage(ChatID, "Произошла ошибка мониторинга, добавьте фильтр еще раз")
@@ -1270,7 +1270,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				if err != nil {
 					log.Printf("error send message: %v", err)
 				}
-
+				log.Printf("url: %s", url)
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
 				url = baseUrl
 			}()

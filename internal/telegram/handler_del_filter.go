@@ -17,6 +17,7 @@ import (
 
 func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur_filter database.Filter, filters []database.Filter) {
 	log.Printf("!!!!!!filter: %v", cur_filter)
+	log.Printf("!!!!!!filters: %v", filters)
 	log.Printf("!!!!!!query: %v", query)
 	switch query.Data {
 	case "select_filter_delete":
