@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -108,6 +109,7 @@ var (
 )
 
 func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 string) {
+	log.Printf("!!!!!ready url: %s", url1)
 	if err := b.db.AddMonitoringFilter(ctx, ID, url1); err != nil {
 		log.Printf("AddMonitoringFilter error: %v", err)
 		msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, добавьте фильтр еще раз")
@@ -174,6 +176,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		return
 	}
+	CurrentFileName = ""
 	go func() {
 		for id := range parser.ChId {
 			log.Print(id)
@@ -1001,8 +1004,8 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					<-ChTranssmission
 					url += "&exact=false"
 					log.Printf("url: %s", url)
-					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
-
+					go func(url1 string) { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url1) }(url)
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Cars_and_lorries:
 
@@ -1057,6 +1060,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					url += "&exact=false"
 					log.Printf("url: %s", url)
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Motorcycles:
 					ChInputMill <- query
@@ -1081,6 +1085,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Powersports:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1101,6 +1106,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Motorhomes_and_campers:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1121,6 +1127,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Boats:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1142,6 +1149,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Commercial_and_industrial:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1162,6 +1170,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Trailers:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1182,6 +1191,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				case Other:
 					msg = tgbotapi.NewMessage(query.Message.Chat.ID, "Выберите внешний цвет транспортного средства:")
@@ -1202,6 +1212,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					log.Printf("url: %s", url)
 
 					go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+					time.Sleep(1 * time.Second)
 					url = baseUrl
 				}
 			}()
@@ -1250,6 +1261,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Free:
@@ -1273,6 +1285,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				}
 				log.Printf("url: %s", url)
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Toys:
@@ -1307,6 +1320,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Instruments:
@@ -1340,6 +1354,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Home_improvements:
@@ -1380,6 +1395,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Classifieds:
@@ -1413,6 +1429,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Apparel:
@@ -1446,6 +1463,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Propertyforsale:
@@ -1472,6 +1490,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Entertainment:
@@ -1505,6 +1524,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Family:
@@ -1538,6 +1558,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Sports:
@@ -1571,6 +1592,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Home:
@@ -1604,6 +1626,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Pets:
@@ -1637,6 +1660,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Office_supplies:
@@ -1670,6 +1694,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Garden:
@@ -1703,6 +1728,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Hobbies:
@@ -1736,6 +1762,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Electronics:
@@ -1776,6 +1803,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Printf("url: %s", url)
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case Groups:
@@ -1799,6 +1827,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				}
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		case All_listings:
@@ -1822,6 +1851,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				}
 
 				go func() { b.successfullCreateFilter(ctx, query.Message.Chat.ID, url) }()
+				time.Sleep(1 * time.Second)
 				url = baseUrl
 			}()
 		default:
