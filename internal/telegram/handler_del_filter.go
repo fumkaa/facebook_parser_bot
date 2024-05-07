@@ -15,9 +15,9 @@ import (
 // var isDel = make(chan database.Filter)
 // var filterFile = make(chan string)
 
-func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur_filter database.Filter, filters []database.Filter) {
+func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQuery, cur_filter database.Filter) {
 	log.Printf("!!!!!!filter: %v", cur_filter)
-	log.Printf("!!!!!!filters: %v", filters)
+	log.Printf("!!!!!!filters: %v", Filters)
 	log.Printf("!!!!!!query: %v", query)
 	switch query.Data {
 	case "select_filter_delete":
@@ -48,12 +48,12 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			return
 		}
 		var filters1 []database.Filter
-		for ind, filter := range filters {
+		for ind, filter := range Filters {
 			if filter.Id == strconv.Itoa(id) {
-				filters1 = append(filters[:ind], filters[ind+1:]...)
+				filters1 = append(Filters[:ind], Filters[ind+1:]...)
 			}
 		}
-		log.Printf("!!!!!!!!!!!!!!!!!filters: %v\nfilters1: %v", filters, filters1)
+		log.Printf("!!!!!!!!!!!!!!!!!filters: %v\nfilters1: %v", Filters, filters1)
 		msg := tgbotapi.NewCallback(query.ID, "Успешно удалено!")
 		_, err = b.bot.Request(msg)
 		if err != nil {
@@ -93,9 +93,9 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 		}
 		CurFilter = filters1[0]
 	case "select_filter_previous":
-		b.previousFilter(query, cur_filter, filters)
+		b.previousFilter(query, cur_filter, Filters)
 	case "select_filter_next":
-		b.nextFilter(query, cur_filter, filters)
+		b.nextFilter(query, cur_filter, Filters)
 	}
 }
 

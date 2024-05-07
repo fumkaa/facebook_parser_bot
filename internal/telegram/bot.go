@@ -112,7 +112,7 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 		} else if update.CallbackQuery != nil {
 			log.Print("update callback query")
 			var err error
-			b.handleDeleteFilter(ctx, update.CallbackQuery, CurFilter, Filters)
+			b.handleDeleteFilter(ctx, update.CallbackQuery, CurFilter)
 			switch b.FSM.Current() {
 			case state_set_city:
 				ID, err = b.db.AddChatIDFilters(ctx, int(update.CallbackQuery.Message.Chat.ID))
