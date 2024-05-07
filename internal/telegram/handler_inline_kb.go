@@ -130,17 +130,10 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		return
 	}
-	msg := tgbotapi.NewMessage(ChatID, "Успешно создан фильтр!")
-	msg.ReplyMarkup = StartKeyboard
-	_, err := b.bot.Send(msg)
-	if err != nil {
-		log.Printf("error send message: %v", err)
-		return
-	}
 
 	if err := b.db.AddFilterFile(ctx, ID, CurrentFileName); err != nil {
 		log.Printf("AddFilterFile error: %v", err)
-		msg = tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова добавить фильтр")
+		msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова добавить фильтр")
 		msg.ReplyMarkup = StartKeyboard
 		_, err = b.bot.Send(msg)
 		if err != nil {
@@ -159,7 +152,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 	}
 	if err := os.Rename(parser.Free_account+CurrentFileName, parser.Work_account+CurrentFileName); err != nil {
 		log.Printf("Rename error: %v", err)
-		msg = tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова добавить фильтр")
+		msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова добавить фильтр")
 		msg.ReplyMarkup = StartKeyboard
 		_, err = b.bot.Send(msg)
 		if err != nil {
@@ -174,6 +167,13 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 			}
 			return
 		}
+		return
+	}
+	msg := tgbotapi.NewMessage(ChatID, "Успешно создан фильтр!")
+	msg.ReplyMarkup = StartKeyboard
+	_, err := b.bot.Send(msg)
+	if err != nil {
+		log.Printf("error send message: %v", err)
 		return
 	}
 	CurrentFileName = ""
@@ -1277,7 +1277,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 
 					return
 				}
-				url += cat_free + creation_time
+				url += cat_free
 				msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Вы выбрали категорию free")
 				_, err := b.bot.Send(msg)
 				if err != nil {
