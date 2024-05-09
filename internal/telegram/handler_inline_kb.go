@@ -178,11 +178,11 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		return
 	}
 	CurrentFileName = ""
-	go func(chatid int64, id int) {
+	go func(chatid int64, id1 int) {
 		for id := range parser.ChId {
-			_, err := b.db.MonitoringByIDFilter(ctx, id)
+			_, err := b.db.MonitoringByIDFilter(ctx, id1)
 			if err == database.ErrNoRows {
-				log.Printf("END MONITORING SEND MSG BY ID %d", id)
+				log.Printf("END MONITORING SEND MSG BY ID %d", id1)
 				return
 			}
 			if err != nil && err != database.ErrNoRows {
