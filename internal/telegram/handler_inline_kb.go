@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	database "facebook_marketplace_bot/internal/database/migration"
 	"facebook_marketplace_bot/internal/parser"
 	"fmt"
 	"log"
@@ -177,16 +178,25 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		return
 	}
 	CurrentFileName = ""
-	go func() {
+	go func(chatid int64, id int) {
 		for id := range parser.ChId {
+			_, err := b.db.MonitoringByIDFilter(ctx, id)
+			if err == database.ErrNoRows {
+				log.Printf("END MONITORING SEND MSG BY ID %d", id)
+				return
+			}
+			if err != nil && err != database.ErrNoRows {
+				log.Printf("MonitoringByIDFilter send msg error: %v", err)
+				return
+			}
 			log.Print(id)
-			msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(id))
+			msg = tgbotapi.NewMessage(chatid, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(id))
 			_, err = b.bot.Send(msg)
 			if err != nil {
 				log.Printf("error send message: %v", err)
 			}
 		}
-	}()
+	}(ChatID, ID)
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)

@@ -25,67 +25,6 @@ var (
 	ErrNoRows       = errors.New("error no rows")
 )
 
-// func (s Storage) AddChatID(ctx context.Context, chat_id int) error {
-// 	conn, err := s.db.Connx(ctx)
-// 	if err != nil {
-// 		return fmt.Errorf("[AddChatID]connection db error: %w", err)
-// 	}
-// 	defer conn.Close()
-
-// 	_, err = conn.ExecContext(ctx, `INSERT INTO data_user (chat_id) VALUES (?);`, chat_id)
-// 	var mysqlErr *mysql.MySQLError
-// 	if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
-// 		return ErrDublicateKey
-// 	}
-// 	if err != nil {
-// 		return fmt.Errorf("[AddChatID]set values chat_id in db error: %w", err)
-// 	}
-
-// 	return nil
-// }
-
-// func (s Storage) AddWaitMessage(ctx context.Context, chat_id int) error {
-// 	conn, err := s.db.Connx(ctx)
-// 	if err != nil {
-// 		return fmt.Errorf("[AddWaitMessage]connection db error: %w", err)
-// 	}
-// 	defer conn.Close()
-
-// 	_, err = conn.ExecContext(ctx, `UPDATE data_user SET wait_response = ? WHERE chat_id = ?;`, true, chat_id)
-// 	if err != nil {
-// 		return fmt.Errorf("[AddWaitMessage]set values wait_response in db error: %w", err)
-// 	}
-// 	return nil
-// }
-
-// func (s Storage) DeleteWaitMessage(ctx context.Context, chat_id int) error {
-// 	conn, err := s.db.Connx(ctx)
-// 	if err != nil {
-// 		return fmt.Errorf("[AddWaitMessage]connection db error: %w", err)
-// 	}
-// 	defer conn.Close()
-
-// 	_, err = conn.ExecContext(ctx, `UPDATE data_user SET wait_response = ? WHERE chat_id = ?;`, false, chat_id)
-// 	if err != nil {
-// 		return fmt.Errorf("[AddWaitMessage]set values wait_response in db error: %w", err)
-// 	}
-// 	return nil
-// }
-
-// func (s Storage) WaitMessage(ctx context.Context, chat_id int) (bool, error) {
-// 	conn, err := s.db.Connx(ctx)
-// 	if err != nil {
-// 		return false, fmt.Errorf("[ChatID]connection db error: %w", err)
-// 	}
-// 	defer conn.Close()
-
-// 	var waitMessage bool
-// 	if err := conn.GetContext(ctx, &waitMessage, `SELECT wait_response FROM data_user WHERE chat_id = ?`, chat_id); err != nil {
-// 		return false, fmt.Errorf("[WaitMessage]get WaitMessage error: %w", err)
-// 	}
-// 	return waitMessage, nil
-// }
-
 func (s Storage) AddCity(ctx context.Context, chat_id int, city string) error {
 	conn, err := s.db.Connx(ctx)
 	if err != nil {

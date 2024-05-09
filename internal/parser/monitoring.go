@@ -28,7 +28,7 @@ func (p *StrParser) Monitoring(ctx context.Context, url string, id int) error {
 			break
 		}
 		if err != nil && err != database.ErrNoRows {
-			log.Printf("MonitoringByIDFilter eror: %v", err)
+			log.Printf("MonitoringByIDFilter error: %v", err)
 			return nil
 		}
 		var (
