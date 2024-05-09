@@ -54,6 +54,10 @@ func (b *Bot) handleBodyStyle(query *tgbotapi.CallbackQuery, url *string) {
 		go func() {
 			ChBodyStyleAlfaRomeo <- query
 		}()
+	case "body_style_alfa_romeo_all":
+		go func() {
+			ChBodyStyleAlfaRomeo <- query
+		}()
 	}
 }
 func (b *Bot) handleRooms(query *tgbotapi.CallbackQuery, url *string) {

@@ -209,6 +209,9 @@ var BodyStyleAlfaRomeoInlineKB = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardButtonData("small car", "body_style_alfa_romeo_small_car"),
 		tgbotapi.NewInlineKeyboardButtonData("other", "body_style_alfa_romeo_other"),
 	),
+	tgbotapi.NewInlineKeyboardRow(
+		tgbotapi.NewInlineKeyboardButtonData("All", "body_style_alfa_romeo_all"),
+	),
 )
 
 var RoomsInlineKB = tgbotapi.NewInlineKeyboardMarkup(
