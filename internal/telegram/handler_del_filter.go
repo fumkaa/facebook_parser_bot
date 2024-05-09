@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	database "facebook_marketplace_bot/internal/database/migration"
 	"facebook_marketplace_bot/internal/parser"
 	"fmt"
@@ -38,14 +39,27 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 
 		}
 		if err := os.Rename(parser.Work_account+cur_filter.Filter_file, parser.Free_account+cur_filter.Filter_file); err != nil {
-			log.Printf("Rename error: %v", err)
-			msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова удалить фильтр")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
+			_, err := os.Stat(parser.Free_account + cur_filter.Filter_file)
+			if err != nil && errors.Is(err, os.ErrNotExist) {
+				log.Printf("Rename Stat error: %v", err)
+				msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Не существует файла: "+parser.Free_account+cur_filter.Filter_file)
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				return
+			} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+				log.Printf("Stat error: %v", err)
+				msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				return
 			}
-			return
+
 		}
 		var filters1 []database.Filter
 		for ind, filter := range Filters {
