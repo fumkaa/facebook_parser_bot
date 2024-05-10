@@ -8,8 +8,10 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -108,6 +110,7 @@ var (
 	MakeNext             bool
 	MakePrevious         bool
 )
+var idAd int
 
 func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 string) {
 	log.Printf("!!!!!ready url: %s", url1)
@@ -178,49 +181,117 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		return
 	}
 	CurrentFileName = ""
-	go func(chatid int64, id1 int) {
-		for id := range parser.ChId {
-			_, err := b.db.MonitoringByIDFilter(ctx, id1)
-			if err == database.ErrNoRows {
-				log.Printf("END MONITORING SEND MSG BY ID %d", id1)
-				return
-			}
-			if err != nil && err != database.ErrNoRows {
-				log.Printf("MonitoringByIDFilter send msg error: %v", err)
-				return
-			}
-			log.Print(id)
-			msg = tgbotapi.NewMessage(chatid, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(id))
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Printf("error send message: %v", err)
-			}
-		}
-	}(ChatID, ID)
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)
-	err = b.parser.Monitoring(Ctxt, url1, ID)
-	if err != nil {
-		log.Printf("Monitoring error: %v", err)
-		msg = tgbotapi.NewMessage(ChatID, "Произошла ошибка мониторинга, добавьте фильтр еще раз")
-		msg.ReplyMarkup = StartKeyboard
-		_, err = b.bot.Send(msg)
-		if err != nil {
-			log.Fatalf("[handleMessage]error send message: %v", err)
+	for {
+		log.Print("MONITORING......")
+
+		_, err := b.db.MonitoringByIDFilter(ctx, ID)
+		if err == database.ErrNoRows {
+			log.Printf("END MONITORING  BY ID %d", ID)
+			break
 		}
-		if err := b.FSM.Event(ctx, state_base); err != nil {
+		if err != nil && err != database.ErrNoRows {
+			log.Printf("MonitoringByIDFilter error: %v", err)
+			return
+		}
+		var (
+			nodes   []*cdp.Node
+			elUrlAd []string
+		)
+		err = chromedp.Run(Ctxt,
+			chromedp.Navigate(url1),
+		)
+		if err != nil {
+			log.Printf("[monitoring]run error: %v", err)
 			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
 			msg.ReplyMarkup = StartKeyboard
 			_, err = b.bot.Send(msg)
 			if err != nil {
 				log.Fatalf("[handleMessage]error send message: %v", err)
 			}
+			if err := b.FSM.Event(ctx, state_base); err != nil {
+				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				return
+			}
 			return
 		}
-		return
+		log.Print("Navigate")
+		err = chromedp.Run(Ctxt,
+			chromedp.Nodes(`a[class="x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 xggy1nq x1a2a7pz x1heor9g xt0b8zv x1hl2dhg x1lku1pv"]`,
+				&nodes, chromedp.ByQuery),
+		)
+		if err != nil {
+			log.Printf("[monitoring]Nodes error: %v", err)
+			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
+			if err := b.FSM.Event(ctx, state_base); err != nil {
+				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				return
+			}
+			return
+		}
+		log.Print("Nodes")
+		for _, node := range nodes {
+			urlAd := node.AttributeValue("href")
+			elUrlAd = strings.Split(urlAd, "/")
+		}
+		log.Print("for")
+		curId, err := strconv.Atoi(elUrlAd[3])
+		if err != nil {
+			log.Printf("convert elUrlAd error: %v", err)
+			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+			msg.ReplyMarkup = StartKeyboard
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Fatalf("[handleMessage]error send message: %v", err)
+			}
+			if err := b.FSM.Event(ctx, state_base); err != nil {
+				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+				msg.ReplyMarkup = StartKeyboard
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Fatalf("[handleMessage]error send message: %v", err)
+				}
+				return
+			}
+			return
+		}
+		if idAd == 0 {
+			idAd = curId
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		if idAd == curId {
+			log.Print("id ad not change")
+			log.Printf("cur id ad: %d\nold id ad: %d", curId, idAd)
+			time.Sleep(10 * time.Second)
+			continue
+		} else if idAd != curId {
+			msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
+			_, err = b.bot.Send(msg)
+			if err != nil {
+				log.Printf("error send message: %v", err)
+			}
+			idAd = curId
+			continue
+		}
 	}
-
 }
 
 func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi.CallbackQuery) error {

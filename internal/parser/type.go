@@ -11,7 +11,6 @@ type Parser interface {
 	Settings(ctx context.Context, datas Datas) error
 	ClickSelectCity(ctx context.Context, city string) error
 	GetData() ([]Datas, error)
-	Monitoring(ctx context.Context, url string, id int) error
 }
 
 type StrParser struct {
