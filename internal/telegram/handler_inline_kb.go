@@ -110,7 +110,10 @@ var (
 	MakeNext             bool
 	MakePrevious         bool
 )
-var idAd int
+var (
+	idAd   int
+	sendAd []int
+)
 
 func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 string) {
 	log.Printf("!!!!!ready url: %s", url1)
@@ -274,6 +277,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		if idAd == 0 {
 			idAd = curId
+
 			time.Sleep(5 * time.Second)
 			continue
 		}
@@ -283,11 +287,28 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 			time.Sleep(10 * time.Second)
 			continue
 		} else if idAd != curId {
+			if sendAd == nil {
+				msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Printf("error send message: %v", err)
+				}
+				sendAd = append(sendAd, curId)
+				idAd = curId
+				continue
+			}
+			for _, sndAd := range sendAd {
+				if curId == sndAd {
+					idAd = curId
+					continue
+				}
+			}
 			msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
 			_, err = b.bot.Send(msg)
 			if err != nil {
 				log.Printf("error send message: %v", err)
 			}
+			sendAd = append(sendAd, curId)
 			idAd = curId
 			continue
 		}
