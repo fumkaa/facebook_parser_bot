@@ -38,6 +38,7 @@ func (b *Bot) handleDeleteFilter(ctx context.Context, query *tgbotapi.CallbackQu
 			return
 
 		}
+		SendAd = []int64{}
 		if err := os.Rename(parser.Work_account+cur_filter.Filter_file, parser.Free_account+cur_filter.Filter_file); err != nil {
 			_, err := os.Stat(parser.Free_account + cur_filter.Filter_file)
 			if err != nil && errors.Is(err, os.ErrNotExist) {
