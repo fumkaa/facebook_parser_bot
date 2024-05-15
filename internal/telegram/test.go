@@ -496,6 +496,14 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 			}
 
 			for _, city := range cities {
+				if len(city) > 64 {
+					city1 := strings.Split(city, " ")
+					CityInlineKeyboard.InlineKeyboard = append(CityInlineKeyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(
+						tgbotapi.NewInlineKeyboardButtonData(city, city1[0]),
+					))
+					break
+				}
+
 				CityInlineKeyboard.InlineKeyboard = append(CityInlineKeyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(
 					tgbotapi.NewInlineKeyboardButtonData(city, city),
 				))
