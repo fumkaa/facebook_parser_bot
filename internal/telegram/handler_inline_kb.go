@@ -190,11 +190,12 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 	for {
 		log.Print("MONITORING......")
 
-		_, err := b.db.MonitoringByIDFilter(ctx, ID)
+		res, err := b.db.MonitoringByIDFilter(ctx, ID)
 		if err == database.ErrNoRows {
 			log.Printf("END MONITORING  BY ID %d", ID)
 			break
 		}
+		fmt.Printf("MonitoringByIDFilter: %v", res)
 		if err != nil && err != database.ErrNoRows {
 			log.Printf("MonitoringByIDFilter error: %v", err)
 			return
@@ -227,8 +228,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
-			chromedp.Nodes(`a[class="x1i10hfl xjbqb8w x1ejq31n xd10rxx x1sy0etr x17r0tee x972fbf xcfux6l x1qhh985 xm0m39n x9f619 x1ypdohk xt0psk2 xe8uvvx xdj266r x11i5rnm xat24cr x1mh8g0r xexx8yu x4uap5 x18d9i69 xkhd6sd x16tdsg8 xggy1nq x1a2a7pz x1heor9g xt0b8zv x1hl2dhg x1lku1pv"]`,
-				&nodes, chromedp.ByQuery),
+			chromedp.Evaluate(`document.querySelector("img").closest("a")`, &nodes),
 		)
 		if err != nil {
 			log.Printf("[monitoring]Nodes error: %v", err)
