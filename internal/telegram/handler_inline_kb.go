@@ -202,7 +202,6 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		var (
 			nodes   []*cdp.Node
-			nodes1  interface{}
 			elUrlAd []string
 		)
 		err = chromedp.Run(Ctxt,
@@ -229,9 +228,8 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
-			chromedp.Evaluate(`document.querySelector("img").closest("a")`, &nodes1),
+			chromedp.Nodes(`img`, &nodes, chromedp.ByQuery),
 		)
-		log.Printf("!!!!!!!!nodes1: %#v", nodes1)
 		if err != nil {
 			log.Printf("[monitoring]Nodes error: %v", err)
 			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
@@ -253,7 +251,18 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		log.Print("Nodes")
 		for _, node := range nodes {
-			urlAd := node.AttributeValue("href")
+			parent := node.Parent
+			for {
+				if parent.LocalName == "div" {
+					log.Printf("parent.LocalName == div")
+					parent = parent.Parent
+				} else if parent.LocalName == "a" {
+					log.Printf("parent.LocalName == a")
+					break
+				}
+			}
+			log.Printf("parent: %v", parent)
+			urlAd := parent.AttributeValue("href")
 			elUrlAd = strings.Split(urlAd, "/")
 		}
 		log.Print("for")
