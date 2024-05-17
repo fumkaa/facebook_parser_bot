@@ -5,16 +5,12 @@ import (
 	"facebook_marketplace_bot/internal/configs"
 	database "facebook_marketplace_bot/internal/database/migration"
 	"facebook_marketplace_bot/internal/parser"
+	"facebook_marketplace_bot/internal/telegram"
 	"fmt"
 	"log"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/chromedp/cdproto/cdp"
-	"github.com/chromedp/chromedp"
 	"github.com/go-sql-driver/mysql"
-
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -116,34 +112,34 @@ func main() {
 // 		if idAd == 0 {
 // 			idAd = curId
 
-// 			time.Sleep(5 * time.Second)
-// 			continue
-// 		}
-// 		if idAd == curId {
-// 			log.Print("id ad not change")
-// 			log.Printf("cur id ad: %d\nold id ad: %d", curId, idAd)
-// 			time.Sleep(10 * time.Second)
-// 			continue
-// 		} else if idAd != curId {
-// 			if SendAd == nil {
-// 				log.Println("SendAd == nil")
-// 				SendAd = append(SendAd, int64(curId))
-// 				idAd = curId
-// 				continue
-// 			}
-// 			for _, sndAd := range SendAd {
-// 				if int64(curId) == sndAd {
-// 					idAd = curId
-// 					continue
-// 				}
-// 			}
-// 			log.Println("find new ad")
-// 			SendAd = append(SendAd, int64(curId))
-// 			idAd = curId
-// 			continue
-// 		}
-// 	}
-// }
+//				time.Sleep(5 * time.Second)
+//				continue
+//			}
+//			if idAd == curId {
+//				log.Print("id ad not change")
+//				log.Printf("cur id ad: %d\nold id ad: %d", curId, idAd)
+//				time.Sleep(10 * time.Second)
+//				continue
+//			} else if idAd != curId {
+//				if SendAd == nil {
+//					log.Println("SendAd == nil")
+//					SendAd = append(SendAd, int64(curId))
+//					idAd = curId
+//					continue
+//				}
+//				for _, sndAd := range SendAd {
+//					if int64(curId) == sndAd {
+//						idAd = curId
+//						continue
+//					}
+//				}
+//				log.Println("find new ad")
+//				SendAd = append(SendAd, int64(curId))
+//				idAd = curId
+//				continue
+//			}
+//		}
+//	}
 func connDB(config *configs.Configuration) (*sqlx.DB, error) {
 	log.Print("connDB start")
 	cnf := mysql.Config{
