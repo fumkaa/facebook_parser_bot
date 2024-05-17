@@ -202,6 +202,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		var (
 			nodes   []*cdp.Node
+			nodes1  interface{}
 			elUrlAd []string
 		)
 		err = chromedp.Run(Ctxt,
@@ -228,8 +229,9 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		}
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
-			chromedp.Evaluate(`document.querySelector("img").closest("a")`, &nodes),
+			chromedp.Evaluate(`document.querySelector("img").closest("a")`, &nodes1),
 		)
+		log.Printf("!!!!!!!!nodes1: %#v", nodes1)
 		if err != nil {
 			log.Printf("[monitoring]Nodes error: %v", err)
 			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")

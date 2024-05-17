@@ -182,32 +182,32 @@ func (p *StrParser) LoginFBaccountToLogPass(ctx context.Context, data Data) erro
 			return fmt.Errorf("click error: %w", err)
 		}
 		if err := chromedp.Run(ctx,
-			chromedp.WaitVisible(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
+			chromedp.WaitVisible(`input[name="email"]`, chromedp.ByQuery),
 		); err != nil {
 			return fmt.Errorf("sendKeys WaitVisible login error: %v", err)
 		}
 		log.Print(" WaitVisible")
 		if err := chromedp.Run(ctx,
-			chromedp.Clear(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
+			chromedp.Clear(`input[name="email"]`, chromedp.ByQuery),
 		); err != nil {
 			return fmt.Errorf("sendKeys Clear login error: %v", err)
 		}
 		log.Print(" Clear")
 		if err := chromedp.Run(ctx,
-			chromedp.SendKeys(`input[class="inputtext _55r1 _6luy"]`, data.LoginFB, chromedp.ByQuery),
+			chromedp.SendKeys(`input[name="email"]`, data.LoginFB, chromedp.ByQuery),
 		); err != nil {
 			return fmt.Errorf("sendKeys login error: %v", err)
 		}
 		log.Print(" SendKeys")
 		if err := chromedp.Run(ctx,
-			chromedp.Clear(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
-			chromedp.SendKeys(`input[class="inputtext _55r1 _6luy _9npi"]`, data.PassFB, chromedp.ByQuery),
+			chromedp.Clear(`input[name="pass"]`, chromedp.ByQuery),
+			chromedp.SendKeys(`input[name="pass"]`, data.PassFB, chromedp.ByQuery),
 		); err != nil {
 			return fmt.Errorf("sendKeys password error: %v", err)
 		}
 
 		if err := chromedp.Run(ctx,
-			chromedp.Submit(`button[class="_42ft _4jy0 _6lth _4jy6 _4jy1 selected _51sy"]`, chromedp.ByQuery),
+			chromedp.Submit(`button[name="login"]`, chromedp.ByQuery),
 			chromedp.Sleep(5*time.Second),
 		); err != nil {
 			return fmt.Errorf("click log in error: %v", err)
@@ -224,31 +224,32 @@ func (p *StrParser) LoginFBaccountToLogPass(ctx context.Context, data Data) erro
 	}
 	// input[class="inputtext _55r1 inputtext _1kbt inputtext _1kbt"]
 	if err := chromedp.Run(ctx,
-		chromedp.WaitVisible(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
+		chromedp.WaitVisible(`input[name="email"]`, chromedp.ByQuery),
 	); err != nil {
 		return fmt.Errorf("sendKeys WaitVisible login error: %v", err)
 	}
 	log.Print(" WaitVisible")
 	if err := chromedp.Run(ctx,
-		chromedp.Clear(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
+		chromedp.Clear(`input[name="email"]`, chromedp.ByQuery),
 	); err != nil {
 		return fmt.Errorf("sendKeys Clear login error: %v", err)
 	}
 	log.Print(" Clear")
 	if err := chromedp.Run(ctx,
-		chromedp.SendKeys(`input[class="inputtext _55r1 _6luy"]`, data.LoginFB, chromedp.ByQuery),
+		chromedp.SendKeys(`input[name="email"]`, data.LoginFB, chromedp.ByQuery),
 	); err != nil {
 		return fmt.Errorf("sendKeys login error: %v", err)
 	}
 	log.Print(" SendKeys")
 	if err := chromedp.Run(ctx,
-		chromedp.Clear(`input[class="inputtext _55r1 _6luy"]`, chromedp.ByQuery),
-		chromedp.SendKeys(`input[class="inputtext _55r1 _6luy _9npi"]`, data.PassFB, chromedp.ByQuery),
+		chromedp.Clear(`input[name="pass"]`, chromedp.ByQuery),
+		chromedp.SendKeys(`input[name="pass"]`, data.PassFB, chromedp.ByQuery),
 	); err != nil {
 		return fmt.Errorf("sendKeys password error: %v", err)
 	}
+
 	if err := chromedp.Run(ctx,
-		chromedp.Submit(`button[class="_42ft _4jy0 _6lth _4jy6 _4jy1 selected _51sy"]`, chromedp.ByQuery),
+		chromedp.Submit(`button[name="login"]`, chromedp.ByQuery),
 		chromedp.Sleep(5*time.Second),
 	); err != nil {
 		return fmt.Errorf("click log in error: %v", err)
