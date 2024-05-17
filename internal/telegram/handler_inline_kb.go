@@ -259,6 +259,9 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 				} else if parent.LocalName == "a" {
 					log.Printf("parent.LocalName == a")
 					break
+				} else {
+					log.Printf("parent else: %v", parent)
+					break
 				}
 			}
 			log.Printf("parent: %v", parent)
