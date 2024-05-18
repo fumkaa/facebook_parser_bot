@@ -195,7 +195,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 			log.Printf("END MONITORING  BY ID %d", ID)
 			break
 		}
-		fmt.Printf("MonitoringByIDFilter: %v", res)
+		log.Printf("MonitoringByIDFilter: %v", res)
 		if err != nil && err != database.ErrNoRows {
 			log.Printf("MonitoringByIDFilter error: %v", err)
 			return
@@ -206,6 +206,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		)
 		err = chromedp.Run(Ctxt,
 			chromedp.Navigate(url1),
+			chromedp.Sleep(5*time.Second),
 		)
 		if err != nil {
 			log.Printf("[monitoring]run error: %v", err)
@@ -249,6 +250,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 			}
 			return
 		}
+		var isErr bool
 		log.Print("Nodes")
 		for _, node := range nodes {
 			parent := node.Parent
@@ -261,12 +263,17 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 					break
 				} else {
 					log.Printf("parent else: %v", parent)
+					isErr = true
 					break
 				}
 			}
 			log.Printf("parent: %v", parent)
 			urlAd := parent.AttributeValue("href")
 			elUrlAd = strings.Split(urlAd, "/")
+		}
+		if isErr {
+			log.Println("isErr true")
+			continue
 		}
 		log.Print("for")
 		curId, err := strconv.Atoi(elUrlAd[3])
