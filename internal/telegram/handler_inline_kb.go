@@ -184,13 +184,13 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		return
 	}
 	CurrentFileName = ""
-	defer Cancel1()
-	defer Cancel2()
-	defer chromedp.Cancel(Ctxt)
 	b.monitoring(ctx, ChatID, url1)
 }
 
 func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string) {
+	defer Cancel1()
+	defer Cancel2()
+	defer chromedp.Cancel(Ctxt)
 	for {
 		log.Print("MONITORING......")
 

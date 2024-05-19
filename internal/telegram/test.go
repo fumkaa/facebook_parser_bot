@@ -517,6 +517,7 @@ func (b *Bot) updateHandleMessage(ctx context.Context, message *tgbotapi.Message
 			}
 			CityInlineKeyboard = tgbotapi.InlineKeyboardMarkup{}
 			CurrentFileName = data.FileName
+
 		}
 	case state_input_price:
 		log.Print("InputPrice ")

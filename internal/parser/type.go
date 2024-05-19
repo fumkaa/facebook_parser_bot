@@ -11,6 +11,7 @@ type Parser interface {
 	Settings(ctx context.Context, datas Datas) error
 	ClickSelectCity(ctx context.Context, city string) error
 	GetData() ([]Datas, error)
+	GetDataFile(name string) (Datas, error)
 }
 
 type StrParser struct {

@@ -80,3 +80,67 @@ func (p *StrParser) GetData() ([]Datas, error) {
 	log.Printf("datas: %v", datas)
 	return datas, nil
 }
+
+func (p *StrParser) GetDataFile(name string) (Datas, error) {
+	dataFile, err := os.ReadDir(Work_account)
+	if err != nil {
+		return Datas{}, fmt.Errorf("read dir error: %w", err)
+	}
+	if len(dataFile) == 0 {
+		log.Print("empty work_account dir")
+		return Datas{}, ErrEmptyData
+	}
+	for _, file := range dataFile {
+		if file.Name() == name {
+			log.Printf("open file: %s", file.Name())
+			dataFile, err := os.Open(Work_account + file.Name())
+			if err != nil {
+				return Datas{}, fmt.Errorf("open data file error: %w", err)
+			}
+			defer func() {
+				if err := dataFile.Close(); err != nil {
+					log.Fatalf("data file close error: %v", err)
+				}
+			}()
+			data, err := io.ReadAll(dataFile)
+			if err != nil {
+				return Datas{}, fmt.Errorf("read data file error: %w", err)
+			}
+			strDatas := Datas{}
+			strDatas.FileName = file.Name()
+
+			strData := Data{}
+			data1 := strings.ReplaceAll(string(data), "\r", "")
+			splitData := strings.Split(data1, "\n")
+
+			loginpass := splitData[0]
+			datalogin := strings.Split(loginpass, ":")
+			login := datalogin[0]
+			pass := datalogin[1]
+
+			strData.LoginFB = login
+			strData.PassFB = pass
+
+			proxy := splitData[1]
+			dataproxy := strings.Split(proxy, "@")
+			ipport := dataproxy[0]
+			loginpassproxy := dataproxy[1]
+			loginpassPX := strings.Split(loginpassproxy, ":")
+			loginPX := loginpassPX[0]
+			passPX := loginpassPX[1]
+
+			strData.IpPortPX = ipport
+			strData.LoginPX = loginPX
+			strData.PassPX = passPX
+
+			cookie := splitData[2]
+
+			strData.Cookies = cookie
+			strDatas.Datas = strData
+
+			return strDatas, nil
+		}
+
+	}
+	return Datas{}, nil
+}

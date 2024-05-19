@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/looplab/fsm"
 )
@@ -88,6 +89,27 @@ func (b *Bot) Start(ctx context.Context) error {
 			dataFilter, err := b.db.SelectFilterToFilterFile(ctx, file.Name())
 			if err != nil {
 				return fmt.Errorf("SelectFilterToFilterFile error: %w", err)
+			}
+			data, err := b.parser.GetDataFile(file.Name())
+			if err != nil {
+				return fmt.Errorf("GetDataFile error: %w", err)
+			}
+			proxy := fmt.Sprintf("http://%s", data.Datas.IpPortPX)
+			log.Printf("proxy: %s", proxy)
+			opts := append(chromedp.DefaultExecAllocatorOptions[:],
+				chromedp.ProxyServer(proxy),
+				chromedp.WindowSize(1900, 1080), // init with a desktop view
+				chromedp.Flag("enable-automation", false),
+				// chromedp.Flag("headless", false),
+			)
+			log.Printf("ip port proxy: %v", data.Datas.IpPortPX)
+			var ctxChr context.Context
+			ctxChr, Cancel1 = chromedp.NewExecAllocator(context.Background(), opts...)
+			Ctxt, Cancel2 = chromedp.NewContext(ctxChr) // chromedp.WithDebugf(log.Printf),
+			log.Print("!!!settings!!!")
+			err = b.parser.Settings(Ctxt, data)
+			if err != nil {
+				return fmt.Errorf("settings error: %w", err)
 			}
 			go func() { b.monitoring(ctx, int64(dataFilter.Chat_id), dataFilter.Monitoring) }()
 		}
