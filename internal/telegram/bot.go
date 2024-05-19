@@ -5,7 +5,9 @@ import (
 	database "facebook_marketplace_bot/internal/database/migration"
 	"facebook_marketplace_bot/internal/parser"
 	"fmt"
+	"io"
 	"log"
+	"os"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/looplab/fsm"
@@ -73,11 +75,42 @@ func (b *Bot) Start(ctx context.Context) error {
 	if err := b.FSM.Event(ctx, state_base); err != nil {
 		return fmt.Errorf("fsm event error: %w", err)
 	}
+	isEmpty, err := IsEmpty(parser.Work_account)
+	if err != nil {
+		return fmt.Errorf("check is empty error: %w", err)
+	}
+	if !isEmpty {
+		workFile, err := os.ReadDir(parser.Work_account)
+		if err != nil {
+			return fmt.Errorf("read dir work account error: %w", err)
+		}
+		for _, file := range workFile {
+			dataFilter, err := b.db.SelectFilterToFilterFile(ctx, file.Name())
+			if err != nil {
+				return fmt.Errorf("SelectFilterToFilterFile error: %w", err)
+			}
+			go func() { b.monitoring(ctx, int64(dataFilter.Chat_id), dataFilter.Monitoring) }()
+		}
+
+	}
 	updates := b.initUpdatesChan()
 	if err := b.handleUpdates(ctx, updates); err != nil {
 		return fmt.Errorf("hadle updates error: %w", err)
 	}
 	return nil
+}
+func IsEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, fmt.Errorf("open file error: %w", err)
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1) // Or f.Readdir(1)
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, nil
 }
 
 func (b *Bot) initUpdatesChan() tgbotapi.UpdatesChannel {

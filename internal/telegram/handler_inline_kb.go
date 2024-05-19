@@ -187,6 +187,10 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)
+	b.monitoring(ctx, ChatID, url1)
+}
+
+func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string) {
 	for {
 		log.Print("MONITORING......")
 
@@ -309,7 +313,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 			continue
 		} else if idAd != curId {
 			if SendAd == nil {
-				msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
+				msg := tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
 				_, err = b.bot.Send(msg)
 				if err != nil {
 					log.Printf("error send message: %v", err)
@@ -324,7 +328,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 					continue
 				}
 			}
-			msg = tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
+			msg := tgbotapi.NewMessage(ChatID, "Найдено новое объявление: https://www.facebook.com/marketplace/item/"+strconv.Itoa(curId))
 			_, err = b.bot.Send(msg)
 			if err != nil {
 				log.Printf("error send message: %v", err)

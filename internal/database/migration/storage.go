@@ -227,3 +227,18 @@ func (s Storage) SelectFilterFile(ctx context.Context, id int) (string, error) {
 
 	return source, nil
 }
+
+func (s Storage) SelectFilterToFilterFile(ctx context.Context, filterFile string) (Filter, error) {
+	conn, err := s.db.Connx(ctx)
+	if err != nil {
+		return Filter{}, fmt.Errorf("[SelectFilterToFilterFile]connection db error: %w", err)
+	}
+	defer conn.Close()
+
+	var sources Filter
+	if err := conn.SelectContext(ctx, &sources, `SELECT * FROM data_filters WHERE filter_file = ?`, filterFile); err != nil {
+		return Filter{}, fmt.Errorf("[SelectFilterToFilterFile]can't execute a request: %w", err)
+	}
+
+	return sources, nil
+}

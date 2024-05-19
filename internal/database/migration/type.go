@@ -17,4 +17,5 @@ type Database interface {
 	SelectAllFilter(ctx context.Context, chat_id int) ([]Filter, error)
 	AddFilterFile(ctx context.Context, id int, filterfile string) error
 	SelectFilterFile(ctx context.Context, id int) (string, error)
+	SelectFilterToFilterFile(ctx context.Context, filterFile string) (Filter, error)
 }
