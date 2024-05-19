@@ -184,19 +184,19 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 		return
 	}
 	CurrentFileName = ""
-	b.monitoring(ctx, ChatID, url1)
+	b.monitoring(ctx, ChatID, url1, ID)
 }
 
-func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string) {
+func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int) {
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)
 	for {
 		log.Print("MONITORING......")
 
-		res, err := b.db.MonitoringByIDFilter(ctx, ID)
+		res, err := b.db.MonitoringByIDFilter(ctx, id)
 		if err == database.ErrNoRows {
-			log.Printf("END MONITORING  BY ID %d", ID)
+			log.Printf("END MONITORING  BY ID %d", id)
 			break
 		}
 		log.Printf("MonitoringByIDFilter: %v", res)

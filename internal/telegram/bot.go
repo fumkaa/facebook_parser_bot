@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/chromedp/chromedp"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -111,7 +112,11 @@ func (b *Bot) Start(ctx context.Context) error {
 			if err != nil {
 				return fmt.Errorf("settings error: %w", err)
 			}
-			go func() { b.monitoring(ctx, int64(dataFilter.Chat_id), dataFilter.Monitoring) }()
+			id, err := strconv.Atoi(dataFilter.Id)
+			if err != nil {
+				return fmt.Errorf("convert to int dataFilter.Id error: %w", err)
+			}
+			go func() { b.monitoring(ctx, int64(dataFilter.Chat_id), dataFilter.Monitoring, id) }()
 		}
 
 	}
