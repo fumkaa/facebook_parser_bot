@@ -236,7 +236,7 @@ func (s Storage) SelectFilterToFilterFile(ctx context.Context, filterFile string
 	defer conn.Close()
 
 	var sources Filter
-	if err := conn.SelectContext(ctx, &sources, `SELECT * FROM data_filters WHERE filter_file = ?`, filterFile); err != nil {
+	if err := conn.GetContext(ctx, &sources, `SELECT * FROM data_filters WHERE filter_file = ?`, filterFile); err != nil {
 		return Filter{}, fmt.Errorf("[SelectFilterToFilterFile]can't execute a request: %w", err)
 	}
 
