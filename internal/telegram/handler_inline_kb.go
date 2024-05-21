@@ -185,6 +185,7 @@ func (b *Bot) successfullCreateFilter(ctx context.Context, ChatID int64, url1 st
 	}
 	CurrentFileName = ""
 	b.monitoring(ctx, ChatID, url1, ID)
+	log.Print("monitoring end work!!!!!!!!!")
 }
 
 func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int) {
@@ -231,12 +232,14 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 			}
 			return
 		}
+		log.Printf("context state: %s", Ctxt.Err().Error())
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
 			chromedp.Nodes(`img`, &nodes, chromedp.ByQuery),
 		)
+		log.Print("nodes img")
 		if err != nil {
-			log.Printf("[monitoring]Nodes error: %v", err)
+			log.Printf("[monitoring]Nodes error: %w", err)
 			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
 			msg.ReplyMarkup = StartKeyboard
 			_, err = b.bot.Send(msg)
@@ -302,7 +305,6 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		}
 		if idAd == 0 {
 			idAd = curId
-
 			time.Sleep(5 * time.Second)
 			continue
 		}
