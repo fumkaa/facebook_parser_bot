@@ -192,6 +192,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 	defer Cancel1()
 	defer Cancel2()
 	defer chromedp.Cancel(Ctxt)
+	now := time.Now()
 	for {
 		log.Print("MONITORING......")
 		log.Printf("SendAd: %v", SendAd)
@@ -204,6 +205,10 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		if err != nil && err != database.ErrNoRows {
 			log.Printf("MonitoringByIDFilter error: %v", err)
 			return
+		}
+		currentTime := time.Since(now)
+		if currentTime.Minutes() > 60 {
+			b.monitoring(ctx, ChatID, url1, id)
 		}
 		var (
 			nodes   []*cdp.Node
