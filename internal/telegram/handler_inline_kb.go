@@ -207,7 +207,9 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 			return
 		}
 		currentTime := time.Since(now)
+		log.Printf("current time: %v", currentTime.Minutes())
 		if currentTime.Minutes() > 60 {
+			log.Print("restart monitoring")
 			b.monitoring(ctx, ChatID, url1, id)
 		}
 		var (
