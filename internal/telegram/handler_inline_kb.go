@@ -194,7 +194,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 	defer chromedp.Cancel(Ctxt)
 	for {
 		log.Print("MONITORING......")
-
+		log.Printf("SendAd: %v", SendAd)
 		res, err := b.db.MonitoringByIDFilter(ctx, id)
 		if err == database.ErrNoRows {
 			log.Printf("END MONITORING  BY ID %d", id)
