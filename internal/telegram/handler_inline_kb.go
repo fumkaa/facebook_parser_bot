@@ -239,7 +239,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		)
 		log.Print("nodes img")
 		if err != nil {
-			log.Printf("[monitoring]Nodes error: %w", err)
+			log.Printf("[monitoring]Nodes error: %v", err)
 			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
 			msg.ReplyMarkup = StartKeyboard
 			_, err = b.bot.Send(msg)
