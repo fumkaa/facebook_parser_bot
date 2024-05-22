@@ -239,7 +239,6 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 			}
 			return
 		}
-		log.Printf("context state: %s", Ctxt.Err().Error())
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
 			chromedp.Nodes(`img`, &nodes, chromedp.ByQuery),
