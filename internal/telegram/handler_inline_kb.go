@@ -222,22 +222,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		)
 		if err != nil {
 			log.Printf("[monitoring]run error: %v", err)
-			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			if err := b.FSM.Event(ctx, state_base); err != nil {
-				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-				msg.ReplyMarkup = StartKeyboard
-				_, err = b.bot.Send(msg)
-				if err != nil {
-					log.Fatalf("[handleMessage]error send message: %v", err)
-				}
-				return
-			}
-			return
+			continue
 		}
 		log.Print("Navigate")
 		err = chromedp.Run(Ctxt,
@@ -246,22 +231,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		log.Print("nodes img")
 		if err != nil {
 			log.Printf("[monitoring]Nodes error: %v", err)
-			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			if err := b.FSM.Event(ctx, state_base); err != nil {
-				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-				msg.ReplyMarkup = StartKeyboard
-				_, err = b.bot.Send(msg)
-				if err != nil {
-					log.Fatalf("[handleMessage]error send message: %v", err)
-				}
-				return
-			}
-			return
+			continue
 		}
 		var isErr bool
 		log.Print("Nodes")
@@ -292,22 +262,7 @@ func (b *Bot) monitoring(ctx context.Context, ChatID int64, url1 string, id int)
 		curId, err := strconv.Atoi(elUrlAd[3])
 		if err != nil {
 			log.Printf("convert elUrlAd error: %v", err)
-			msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-			msg.ReplyMarkup = StartKeyboard
-			_, err = b.bot.Send(msg)
-			if err != nil {
-				log.Fatalf("[handleMessage]error send message: %v", err)
-			}
-			if err := b.FSM.Event(ctx, state_base); err != nil {
-				msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
-				msg.ReplyMarkup = StartKeyboard
-				_, err = b.bot.Send(msg)
-				if err != nil {
-					log.Fatalf("[handleMessage]error send message: %v", err)
-				}
-				return
-			}
-			return
+			continue
 		}
 		if idAd == 0 {
 			idAd = curId
