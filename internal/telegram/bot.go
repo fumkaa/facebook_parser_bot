@@ -154,6 +154,11 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 		if update.Message != nil {
 			if update.Message.IsCommand() {
 				if err := b.handleCommand(update.Message); err != nil {
+					msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Printf("error send message: %v", err)
+					}
 					return fmt.Errorf("handle command error: %w", err)
 				}
 				continue
@@ -161,12 +166,22 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 			if SendFile {
 				if update.Message.Document != nil {
 					if err := b.handleFile(update.Message); err != nil {
+						msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+						_, err = b.bot.Send(msg)
+						if err != nil {
+							log.Printf("error send message: %v", err)
+						}
 						return fmt.Errorf("handle file error: %w", err)
 					}
 					continue
 				}
 			}
 			if err := b.updateHandleMessage(ctx, update.Message); err != nil {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+				_, err = b.bot.Send(msg)
+				if err != nil {
+					log.Printf("error send message: %v", err)
+				}
 				return fmt.Errorf("handle message error: %w", err)
 			}
 		} else if update.CallbackQuery != nil {
@@ -178,27 +193,30 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 				ID, err = b.db.AddChatIDFilters(ctx, int(update.CallbackQuery.Message.Chat.ID))
 				if err != nil {
 					log.Printf("AddChatIDFilters error: %v", err)
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
 					_, err = b.bot.Send(msg)
 					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
+						log.Printf("error send message: %v", err)
 					}
 					return nil
 				}
 				if err := b.handlerCityInlineKeyboard(Ctxt, update.CallbackQuery); err != nil {
 					log.Printf("handlerCityInlineKeyboard error: %v", err)
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, replyErr)
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Printf("error send message: %v", err)
+					}
+					msg = tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, replyErr)
 					b.bot.Send(msg)
 					continue
 				}
 				if err := b.db.AddCityFilter(ctx, ID, update.CallbackQuery.Data); err != nil {
 					log.Printf("AddCityFilter error: %v", err)
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
 					_, err = b.bot.Send(msg)
 					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
+						log.Printf("error send message: %v", err)
 					}
 					return nil
 				}
@@ -207,11 +225,10 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 					log.Printf("error send message: %v", err)
 				}
 				if err := b.FSM.Event(ctx, state_set_radius); err != nil {
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-					msg.ReplyMarkup = StartKeyboard
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
 					_, err = b.bot.Send(msg)
 					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
+						log.Printf("error send message: %v", err)
 					}
 					return nil
 				}
@@ -226,16 +243,18 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 			case state_set_radius:
 				if err := b.handlerRadiusInlineKeyboard(Ctxt, update.CallbackQuery); err != nil {
 					log.Printf("handlerRadiusInlineKeyboard error: %v", err)
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-					b.bot.Send(msg)
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Printf("error send message: %v", err)
+					}
 				}
 				if err := b.db.AddRadiusFilter(ctx, ID, update.CallbackQuery.Data); err != nil {
 					log.Printf("AddRadiusFilter error: %v", err)
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
-					msg.ReplyMarkup = StartKeyboard
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
 					_, err = b.bot.Send(msg)
 					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
+						log.Printf("error send message: %v", err)
 					}
 					return nil
 				}
@@ -246,11 +265,10 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 				}
 
 				if err := b.FSM.Event(ctx, state_select_category); err != nil {
-					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
-					msg.ReplyMarkup = StartKeyboard
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
 					_, err = b.bot.Send(msg)
 					if err != nil {
-						log.Fatalf("[handleMessage]error send message: %v", err)
+						log.Printf("error send message: %v", err)
 					}
 					return nil
 				}
@@ -265,6 +283,11 @@ func (b *Bot) handleUpdates(ctx context.Context, updates tgbotapi.UpdatesChannel
 			case state_select_category:
 				log.Print("update.CallbackQuery SelectInlineKB")
 				if err := b.handlerCategoryInlineKeyboard(ctx, update.CallbackQuery); err != nil {
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, fmt.Sprintf("произошла ошибка: %v", err))
+					_, err = b.bot.Send(msg)
+					if err != nil {
+						log.Printf("error send message: %v", err)
+					}
 					return fmt.Errorf("handlerCategoryInlineKeyboard error: %w", err)
 				}
 			}

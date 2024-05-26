@@ -908,7 +908,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 						log.Printf("error send message: %v", err)
 					}
 					if err := b.FSM.Event(ctx, state_input_price); err != nil {
-						msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
+						msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 						msg.ReplyMarkup = StartKeyboard
 						_, err = b.bot.Send(msg)
 						if err != nil {
@@ -936,7 +936,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 						log.Printf("error send message: %v", err)
 					}
 					if err := b.FSM.Event(ctx, state_input_year); err != nil {
-						msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
+						msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 						msg.ReplyMarkup = StartKeyboard
 						_, err = b.bot.Send(msg)
 						if err != nil {
@@ -960,7 +960,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 						log.Printf("error send message: %v", err)
 					}
 					if err := b.FSM.Event(ctx, state_input_square_meters); err != nil {
-						msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова")
+						msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 						msg.ReplyMarkup = StartKeyboard
 						_, err = b.bot.Send(msg)
 						if err != nil {
@@ -988,7 +988,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 							log.Printf("error send message: %v", err)
 						}
 						if err := b.FSM.Event(ctx, state_input_mill); err != nil {
-							msg := tgbotapi.NewMessage(ChatID, "Произошла ошибка, попробуйте снова")
+							msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 							msg.ReplyMarkup = StartKeyboard
 							_, err = b.bot.Send(msg)
 							if err != nil {
@@ -1010,7 +1010,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "vehicles"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1051,6 +1051,12 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					MakeBreak = false
 					go func() {
 						if err := b.handleMake(msg1); err != nil {
+							msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
+							msg.ReplyMarkup = StartKeyboard
+							_, err = b.bot.Send(msg)
+							if err != nil {
+								log.Fatalf("[handleMessage]error send message: %v", err)
+							}
 							log.Printf("handleMake error: %v", err)
 							return
 						}
@@ -1108,6 +1114,12 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 					MakeBreak = false
 					go func() {
 						if err := b.handleMake(msg1); err != nil {
+							msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
+							msg.ReplyMarkup = StartKeyboard
+							_, err = b.bot.Send(msg)
+							if err != nil {
+								log.Fatalf("[handleMessage]error send message: %v", err)
+							}
 							log.Printf("handleMake error: %v", err)
 							return
 						}
@@ -1311,7 +1323,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 
 				if err := b.db.AddCategoryFilter(ctx, ID, "propertyrentals"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1358,7 +1370,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "free"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1383,7 +1395,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 				log.Print("Toys")
 				if err := b.db.AddCategoryFilter(ctx, ID, "toys"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1417,7 +1429,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "instruments"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1451,7 +1463,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "home improvements"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1492,7 +1504,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "classifieds"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1526,7 +1538,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "apparel"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1560,7 +1572,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "property for sale"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1587,13 +1599,12 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "entertainment"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
 						log.Fatalf("[handleMessage]error send message: %v", err)
 					}
-
 					return
 				}
 				url += cat_entertainment
@@ -1621,7 +1632,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "family"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1655,7 +1666,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "sports"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1689,7 +1700,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "home"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1723,7 +1734,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "pets"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1757,7 +1768,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "office supplies"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1791,7 +1802,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "garden"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1825,7 +1836,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "hobbies"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1859,7 +1870,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "electronics"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1900,7 +1911,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "groups"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
@@ -1924,7 +1935,7 @@ func (b *Bot) handlerCategoryInlineKeyboard(ctx context.Context, query *tgbotapi
 			go func() {
 				if err := b.db.AddCategoryFilter(ctx, ID, "all listings"); err != nil {
 					log.Printf("AddCategoryFilter error: %v", err)
-					msg := tgbotapi.NewMessage(query.Message.Chat.ID, "Произошла ошибка, попробуйте снова добавить фильтр")
+					msg := tgbotapi.NewMessage(query.Message.Chat.ID, fmt.Sprintf("Произошла ошибка: %v", err))
 					msg.ReplyMarkup = StartKeyboard
 					_, err = b.bot.Send(msg)
 					if err != nil {
